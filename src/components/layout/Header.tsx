@@ -2,19 +2,21 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const navLinks = [
-  { href: "/", label: "Početna" },
-  { href: "/about", label: "O meni" },
-  { href: "/gallery", label: "Galerija" },
-  { href: "/packages", label: "Paketi" },
-  { href: "/contact", label: "Kontakt" },
+  { href: "#about", label: "O meni" },
+  { href: "#gallery", label: "Galerija" },
+  { href: "#packages", label: "Paketi" },
+  { href: "#testimonials", label: "Recenzije" },
+  { href: "#contact", label: "Kontakt" },
 ];
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { settings } = useSiteSettings();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,9 +26,16 @@ export const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const isActive = (href: string) => {
-    if (href === "/") return location.pathname === "/";
-    return location.pathname.startsWith(href);
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // If we're on homepage and it's a hash link
+    if (location.pathname === "/" && href.startsWith("#")) {
+      e.preventDefault();
+      const element = document.getElementById(href.slice(1));
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+      setIsMobileMenuOpen(false);
+    }
   };
 
   return (
@@ -41,30 +50,37 @@ export const Header = () => {
       <div className="container flex items-center justify-between">
         <Link
           to="/"
-          className="font-serif text-2xl md:text-3xl tracking-wide text-foreground"
+          className={cn(
+            "font-serif text-2xl md:text-3xl tracking-wide transition-colors",
+            isScrolled ? "text-foreground" : "text-cream"
+          )}
         >
-          Ana Fotografija
+          {settings.footer.brand_name}
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <Link
+            <a
               key={link.href}
-              to={link.href}
+              href={link.href}
+              onClick={(e) => handleNavClick(e, link.href)}
               className={cn(
-                "nav-link",
-                isActive(link.href) && "nav-link-active"
+                "nav-link transition-colors",
+                isScrolled ? "text-foreground/80 hover:text-foreground" : "text-cream/80 hover:text-cream"
               )}
             >
               {link.label}
-            </Link>
+            </a>
           ))}
         </nav>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-2 text-foreground"
+          className={cn(
+            "md:hidden p-2 transition-colors",
+            isScrolled ? "text-foreground" : "text-cream"
+          )}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -77,17 +93,14 @@ export const Header = () => {
         <nav className="md:hidden absolute top-full left-0 right-0 bg-background border-t border-border animate-fade-in">
           <div className="container py-4 flex flex-col gap-4">
             {navLinks.map((link) => (
-              <Link
+              <a
                 key={link.href}
-                to={link.href}
-                className={cn(
-                  "nav-link py-2",
-                  isActive(link.href) && "nav-link-active"
-                )}
-                onClick={() => setIsMobileMenuOpen(false)}
+                href={link.href}
+                className="nav-link py-2"
+                onClick={(e) => handleNavClick(e, link.href)}
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
           </div>
         </nav>

@@ -6,11 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import Index from "./pages/Index";
-import About from "./pages/About";
-import Gallery from "./pages/Gallery";
 import GalleryDetail from "./pages/GalleryDetail";
-import Packages from "./pages/Packages";
-import Contact from "./pages/Contact";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -35,11 +31,7 @@ const App = () => (
             {/* Public Routes */}
             <Route element={<PublicLayout />}>
               <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/gallery" element={<Gallery />} />
               <Route path="/gallery/:slug" element={<GalleryDetail />} />
-              <Route path="/packages" element={<Packages />} />
-              <Route path="/contact" element={<Contact />} />
             </Route>
 
             {/* Admin Routes */}

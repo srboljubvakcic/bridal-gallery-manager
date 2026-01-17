@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { settings } = useSiteSettings();
 
   return (
     <footer className="bg-charcoal text-cream/90 py-16">
@@ -10,30 +12,33 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand */}
           <div>
-            <h3 className="font-serif text-2xl text-cream mb-4">Ana Fotografija</h3>
+            <h3 className="font-serif text-2xl text-cream mb-4">{settings.footer.brand_name}</h3>
             <p className="text-cream/70 text-sm leading-relaxed mb-6">
-              Profesionalna fotografija vjenčanja. Bilježim vaše najljepše trenutke 
-              s pažnjom prema detaljima i emocijama.
+              {settings.footer.description}
             </p>
             <div className="flex gap-4">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cream/70 hover:text-champagne transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram size={20} />
-              </a>
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cream/70 hover:text-champagne transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook size={20} />
-              </a>
+              {settings.contact.instagram && (
+                <a
+                  href={settings.contact.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cream/70 hover:text-champagne transition-colors"
+                  aria-label="Instagram"
+                >
+                  <Instagram size={20} />
+                </a>
+              )}
+              {settings.contact.facebook && (
+                <a
+                  href={settings.contact.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cream/70 hover:text-champagne transition-colors"
+                  aria-label="Facebook"
+                >
+                  <Facebook size={20} />
+                </a>
+              )}
             </div>
           </div>
 
@@ -41,18 +46,18 @@ export const Footer = () => {
           <div>
             <h4 className="font-serif text-lg text-cream mb-4">Brze Veze</h4>
             <nav className="flex flex-col gap-2">
-              <Link to="/about" className="text-cream/70 hover:text-champagne transition-colors text-sm">
+              <a href="#about" className="text-cream/70 hover:text-champagne transition-colors text-sm">
                 O meni
-              </Link>
-              <Link to="/gallery" className="text-cream/70 hover:text-champagne transition-colors text-sm">
+              </a>
+              <a href="#gallery" className="text-cream/70 hover:text-champagne transition-colors text-sm">
                 Galerija
-              </Link>
-              <Link to="/packages" className="text-cream/70 hover:text-champagne transition-colors text-sm">
+              </a>
+              <a href="#packages" className="text-cream/70 hover:text-champagne transition-colors text-sm">
                 Paketi i cijene
-              </Link>
-              <Link to="/contact" className="text-cream/70 hover:text-champagne transition-colors text-sm">
+              </a>
+              <a href="#contact" className="text-cream/70 hover:text-champagne transition-colors text-sm">
                 Kontakt
-              </Link>
+              </a>
             </nav>
           </div>
 
@@ -61,22 +66,22 @@ export const Footer = () => {
             <h4 className="font-serif text-lg text-cream mb-4">Kontakt</h4>
             <div className="flex flex-col gap-3">
               <a
-                href="mailto:info@anafotografija.com"
+                href={`mailto:${settings.contact.email}`}
                 className="flex items-center gap-3 text-cream/70 hover:text-champagne transition-colors text-sm"
               >
                 <Mail size={16} />
-                info@anafotografija.com
+                {settings.contact.email}
               </a>
               <a
-                href="tel:+38761234567"
+                href={`tel:${settings.contact.phone.replace(/\s/g, "")}`}
                 className="flex items-center gap-3 text-cream/70 hover:text-champagne transition-colors text-sm"
               >
                 <Phone size={16} />
-                +387 61 234 567
+                {settings.contact.phone}
               </a>
               <div className="flex items-center gap-3 text-cream/70 text-sm">
                 <MapPin size={16} />
-                Sarajevo, Bosna i Hercegovina
+                {settings.contact.address}
               </div>
             </div>
           </div>
@@ -84,7 +89,7 @@ export const Footer = () => {
 
         <div className="border-t border-cream/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-cream/50 text-xs">
-            © {currentYear} Ana Fotografija. Sva prava zadržana.
+            © {currentYear} {settings.footer.brand_name}. Sva prava zadržana.
           </p>
           <Link
             to="/admin"
