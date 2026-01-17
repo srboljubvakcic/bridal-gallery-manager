@@ -3,24 +3,62 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { PublicLayout } from "@/components/layout/PublicLayout";
 import Index from "./pages/Index";
+import About from "./pages/About";
+import Gallery from "./pages/Gallery";
+import GalleryDetail from "./pages/GalleryDetail";
+import Packages from "./pages/Packages";
+import Contact from "./pages/Contact";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminLayout from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminGalleries from "./pages/admin/AdminGalleries";
+import AdminPhotos from "./pages/admin/AdminPhotos";
+import AdminPackages from "./pages/admin/AdminPackages";
+import AdminMessages from "./pages/admin/AdminMessages";
+import AdminTestimonials from "./pages/admin/AdminTestimonials";
+import AdminContent from "./pages/admin/AdminContent";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Public Routes */}
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/gallery" element={<Gallery />} />
+              <Route path="/gallery/:slug" element={<GalleryDetail />} />
+              <Route path="/packages" element={<Packages />} />
+              <Route path="/contact" element={<Contact />} />
+            </Route>
+
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="galleries" element={<AdminGalleries />} />
+              <Route path="photos" element={<AdminPhotos />} />
+              <Route path="packages" element={<AdminPackages />} />
+              <Route path="messages" element={<AdminMessages />} />
+              <Route path="testimonials" element={<AdminTestimonials />} />
+              <Route path="content" element={<AdminContent />} />
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
