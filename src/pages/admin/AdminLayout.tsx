@@ -98,10 +98,10 @@ const AdminLayout = () => {
               {user.email}
             </p>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleSignOut}
-              className="w-full border-sidebar-border text-sidebar-foreground hover:bg-sidebar-accent"
+              className="w-full bg-sidebar-accent text-cream hover:bg-sidebar-accent/80"
             >
               <LogOut className="w-4 h-4 mr-2" />
               Odjavi se

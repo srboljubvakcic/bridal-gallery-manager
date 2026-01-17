@@ -136,13 +136,12 @@ const Index = () => {
               className="px-8"
               onClick={() => scrollToSection("contact")}
             >
-              {settings.hero.cta_text}
+              Rezervišite Termin
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
             <Button
-              variant="outline"
               size="lg"
-              className="px-8 border-cream text-cream hover:bg-cream hover:text-charcoal"
+              className="px-8 bg-cream/20 backdrop-blur-sm text-cream border border-cream/50 hover:bg-cream hover:text-charcoal"
               onClick={() => scrollToSection("gallery")}
             >
               {settings.hero.cta_secondary_text}
@@ -319,32 +318,31 @@ const Index = () => {
 
       {/* Testimonials Section */}
       {testimonials.length > 0 && (
-        <section id="testimonials" className="section-padding bg-charcoal text-cream">
+        <section id="testimonials" className="section-padding bg-secondary/50">
           <div className="container">
             <SectionHeading
               subtitle="Iskustva"
               title="Šta kažu parovi"
-              className="text-cream [&_p]:text-champagne"
             />
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
               {testimonials.map((testimonial, index) => (
                 <div
                   key={testimonial.id}
-                  className="bg-cream/5 rounded-sm p-8 opacity-0 animate-fade-in"
+                  className="bg-card rounded-sm p-8 shadow-soft opacity-0 animate-fade-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex justify-center gap-1 mb-6">
                     {[...Array(testimonial.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-champagne text-champagne" />
+                      <Star key={i} className="w-4 h-4 fill-primary text-primary" />
                     ))}
                   </div>
-                  <blockquote className="font-serif text-lg italic text-cream/90 mb-6 text-center leading-relaxed">
+                  <blockquote className="font-serif text-lg italic text-foreground mb-6 text-center leading-relaxed">
                     "{testimonial.content}"
                   </blockquote>
                   <div className="text-center">
-                    <p className="text-champagne font-medium">{testimonial.name}</p>
+                    <p className="text-primary font-medium">{testimonial.name}</p>
                     {testimonial.wedding_date && (
-                      <p className="text-cream/60 text-sm">{testimonial.wedding_date}</p>
+                      <p className="text-muted-foreground text-sm">{testimonial.wedding_date}</p>
                     )}
                   </div>
                 </div>
@@ -353,20 +351,6 @@ const Index = () => {
           </div>
         </section>
       )}
-
-      {/* CTA Section */}
-      <section className="section-padding">
-        <div className="container text-center max-w-2xl">
-          <SectionHeading subtitle={settings.cta.subtitle} title={settings.cta.title} />
-          <p className="text-muted-foreground mb-8">
-            {settings.cta.description}
-          </p>
-          <Button size="lg" className="px-10" onClick={() => scrollToSection("contact")}>
-            {settings.cta.button_text}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      </section>
 
       {/* Contact Section */}
       <section id="contact" className="section-padding bg-secondary/30">
