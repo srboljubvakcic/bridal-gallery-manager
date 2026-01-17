@@ -51,11 +51,24 @@ export const Header = () => {
         <Link
           to="/"
           className={cn(
-            "font-serif text-2xl md:text-3xl tracking-wide transition-colors",
+            "transition-colors",
             isScrolled ? "text-foreground" : "text-cream"
           )}
         >
-          {settings.footer.brand_name}
+          {settings.footer.logo ? (
+            <img 
+              src={settings.footer.logo} 
+              alt={settings.footer.brand_name || "Logo"} 
+              className={cn(
+                "h-8 md:h-10 object-contain transition-all",
+                !isScrolled && "brightness-0 invert"
+              )}
+            />
+          ) : (
+            <span className="font-serif text-2xl md:text-3xl tracking-wide">
+              {settings.footer.brand_name}
+            </span>
+          )}
         </Link>
 
         {/* Desktop Navigation */}
