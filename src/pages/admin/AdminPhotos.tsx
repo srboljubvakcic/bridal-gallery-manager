@@ -30,6 +30,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Progress } from "@/components/ui/progress";
 
 interface Photo {
   id: string;
@@ -44,6 +45,70 @@ interface Gallery {
   name: string;
 }
 
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+
+// Compress image to target size
+const compressImage = (file: File, maxSizeMB: number = 2): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+        
+        // Calculate new dimensions while maintaining aspect ratio
+        const maxDimension = 2000; // Max width/height
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = (height / width) * maxDimension;
+            width = maxDimension;
+          } else {
+            width = (width / height) * maxDimension;
+            height = maxDimension;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        // Start with high quality and reduce if needed
+        let quality = 0.9;
+        const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+        const tryCompress = () => {
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error("Failed to compress image"));
+                return;
+              }
+
+              if (blob.size > maxSizeBytes && quality > 0.1) {
+                quality -= 0.1;
+                tryCompress();
+              } else {
+                resolve(blob);
+              }
+            },
+            "image/jpeg",
+            quality
+          );
+        };
+
+        tryCompress();
+      };
+      img.onerror = reject;
+    };
+    reader.onerror = reject;
+  });
+};
+
 const AdminPhotos = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [galleries, setGalleries] = useState<Gallery[]>([]);
@@ -52,6 +117,8 @@ const AdminPhotos = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [deletePhoto, setDeletePhoto] = useState<Photo | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadTotal, setUploadTotal] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchGalleries = async () => {
@@ -103,40 +170,63 @@ const AdminPhotos = () => {
     if (!files || files.length === 0 || !selectedGallery) return;
 
     setUploading(true);
+    setUploadProgress(0);
+    setUploadTotal(files.length);
+
+    let completed = 0;
 
     for (const file of Array.from(files)) {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-      const filePath = `${selectedGallery}/${fileName}`;
+      try {
+        // Compress image if larger than 2MB
+        let fileToUpload: Blob | File = file;
+        if (file.size > MAX_FILE_SIZE) {
+          toast.info(`Kompresija: ${file.name}...`);
+          fileToUpload = await compressImage(file, 2);
+        }
 
-      const { error: uploadError } = await supabase.storage
-        .from("photos")
-        .upload(filePath, file);
+        const fileExt = "jpg"; // Always save as jpg after compression
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `${selectedGallery}/${fileName}`;
 
-      if (uploadError) {
-        toast.error(`Greška pri uploadu: ${file.name}`);
-        continue;
-      }
+        const { error: uploadError } = await supabase.storage
+          .from("photos")
+          .upload(filePath, fileToUpload, {
+            contentType: "image/jpeg",
+          });
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("photos")
-        .getPublicUrl(filePath);
+        if (uploadError) {
+          toast.error(`Greška pri uploadu: ${file.name}`);
+          continue;
+        }
 
-      const { error: insertError } = await supabase.from("photos").insert({
-        gallery_id: selectedGallery,
-        image_url: publicUrl,
-        title: file.name.replace(/\.[^/.]+$/, ""),
-        display_order: photos.length,
-      });
+        const { data: { publicUrl } } = supabase.storage
+          .from("photos")
+          .getPublicUrl(filePath);
 
-      if (insertError) {
-        toast.error(`Greška pri spremanju: ${file.name}`);
+        const { error: insertError } = await supabase.from("photos").insert({
+          gallery_id: selectedGallery,
+          image_url: publicUrl,
+          title: file.name.replace(/\.[^/.]+$/, ""),
+          display_order: photos.length + completed,
+        });
+
+        if (insertError) {
+          toast.error(`Greška pri spremanju: ${file.name}`);
+        }
+
+        completed++;
+        setUploadProgress(completed);
+      } catch (error) {
+        console.error("Upload error:", error);
+        toast.error(`Greška: ${file.name}`);
       }
     }
 
-    toast.success("Fotografije uspješno uploadane");
+    toast.success(`Uspješno uploadano ${completed} fotografija`);
     fetchPhotos();
     setUploading(false);
+    setUploadProgress(0);
+    setUploadTotal(0);
     setIsDialogOpen(false);
 
     if (fileInputRef.current) {
@@ -207,11 +297,16 @@ const AdminPhotos = () => {
                   className="mt-1.5"
                 />
                 <p className="text-muted-foreground text-xs mt-1">
-                  Možete odabrati više fotografija odjednom
+                  Možete odabrati više fotografija. Slike veće od 2MB će biti automatski kompresovane.
                 </p>
               </div>
               {uploading && (
-                <p className="text-primary text-sm">Uploadam fotografije...</p>
+                <div className="space-y-2">
+                  <p className="text-primary text-sm">
+                    Uploadam fotografije... ({uploadProgress}/{uploadTotal})
+                  </p>
+                  <Progress value={(uploadProgress / uploadTotal) * 100} />
+                </div>
               )}
             </div>
           </DialogContent>
