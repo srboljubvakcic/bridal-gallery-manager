@@ -94,9 +94,13 @@ const Index = () => {
     });
 
     if (error) {
-      toast.error("Greška pri slanju poruke. Pokušajte ponovo.");
+      toast.error("Greška pri slanju poruke", {
+        description: "Molimo pokušajte ponovo ili nas kontaktirajte direktno putem email-a.",
+      });
     } else {
-      toast.success("Poruka je uspješno poslana! Javit ću vam se uskoro.");
+      toast.success("Poruka uspješno poslana! ✨", {
+        description: "Hvala vam na poruci! Javit ću vam se u najkraćem mogućem roku.",
+      });
       reset();
     }
     setIsSubmitting(false);
