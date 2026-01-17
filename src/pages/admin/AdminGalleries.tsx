@@ -179,7 +179,14 @@ const AdminGalleries = () => {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) => {
+                    const name = e.target.value;
+                    setFormData({ 
+                      ...formData, 
+                      name,
+                      slug: generateSlug(name)
+                    });
+                  }}
                   placeholder="Npr. Ceremonija"
                   required
                 />
@@ -190,10 +197,11 @@ const AdminGalleries = () => {
                   id="slug"
                   value={formData.slug}
                   onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  placeholder="npr-ceremonija"
+                  placeholder="automatski-generisan"
+                  className="bg-muted"
                 />
                 <p className="text-muted-foreground text-xs mt-1">
-                  Ostavite prazno za automatsko generisanje
+                  Automatski generisan iz naziva (bolji za SEO)
                 </p>
               </div>
               <div>

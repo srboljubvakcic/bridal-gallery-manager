@@ -318,31 +318,32 @@ const Index = () => {
 
       {/* Testimonials Section */}
       {testimonials.length > 0 && (
-        <section id="testimonials" className="section-padding bg-secondary/50">
+        <section id="testimonials" className="section-padding bg-charcoal">
           <div className="container">
             <SectionHeading
               subtitle="Iskustva"
               title="Šta kažu parovi"
+              className="[&_p]:text-champagne [&_h2]:text-cream"
             />
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
               {testimonials.map((testimonial, index) => (
                 <div
                   key={testimonial.id}
-                  className="bg-card rounded-sm p-8 shadow-soft opacity-0 animate-fade-in"
+                  className="bg-cream rounded-sm p-8 shadow-elegant opacity-0 animate-fade-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div className="flex justify-center gap-1 mb-6">
                     {[...Array(testimonial.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+                      <Star key={i} className="w-4 h-4 fill-champagne-dark text-champagne-dark" />
                     ))}
                   </div>
-                  <blockquote className="font-serif text-lg italic text-foreground mb-6 text-center leading-relaxed">
+                  <blockquote className="font-serif text-lg italic text-charcoal mb-6 text-center leading-relaxed">
                     "{testimonial.content}"
                   </blockquote>
                   <div className="text-center">
-                    <p className="text-primary font-medium">{testimonial.name}</p>
+                    <p className="text-champagne-dark font-medium">{testimonial.name}</p>
                     {testimonial.wedding_date && (
-                      <p className="text-muted-foreground text-sm">{testimonial.wedding_date}</p>
+                      <p className="text-charcoal/60 text-sm">{testimonial.wedding_date}</p>
                     )}
                   </div>
                 </div>

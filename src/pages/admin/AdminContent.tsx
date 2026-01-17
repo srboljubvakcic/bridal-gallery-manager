@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Save, FileText, Image, Phone, Type } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Save, FileText, Image, Phone, Type, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,10 @@ const AdminContent = () => {
   const [settings, setSettings] = useState<SiteSettingsData>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
+  const [uploadingHero, setUploadingHero] = useState(false);
+  const [uploadingAbout, setUploadingAbout] = useState(false);
+  const heroFileRef = useRef<HTMLInputElement>(null);
+  const aboutFileRef = useRef<HTMLInputElement>(null);
 
   const fetchSettings = async () => {
     const { data, error } = await supabase
@@ -64,6 +68,69 @@ const AdminContent = () => {
     });
   };
 
+  const handleImageUpload = async (
+    file: File,
+    section: "hero" | "about",
+    field: string
+  ) => {
+    const setUploading = section === "hero" ? setUploadingHero : setUploadingAbout;
+    setUploading(true);
+
+    try {
+      // Delete old image if exists
+      const oldUrl = settings[section]?.[field];
+      if (oldUrl && oldUrl.includes("site-images")) {
+        const urlParts = oldUrl.split("/site-images/");
+        if (urlParts.length > 1) {
+          await supabase.storage.from("site-images").remove([urlParts[1]]);
+        }
+      }
+
+      // Upload new image
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${section}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("site-images")
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) {
+        toast.error("Greška pri uploadu slike");
+        setUploading(false);
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("site-images")
+        .getPublicUrl(fileName);
+
+      // Update settings with new image URL
+      updateField(section, field, publicUrl);
+
+      // Save to database immediately
+      const updatedSettings = {
+        ...settings[section],
+        [field]: publicUrl,
+      };
+
+      const { error: saveError } = await supabase
+        .from("site_settings")
+        .update({ value: updatedSettings })
+        .eq("key", section);
+
+      if (saveError) {
+        toast.error("Greška pri spremanju");
+      } else {
+        toast.success("Slika uspješno uploadana");
+        fetchSettings();
+      }
+    } catch {
+      toast.error("Greška pri uploadu");
+    }
+
+    setUploading(false);
+  };
+
   if (loading) {
     return (
       <div>
@@ -95,10 +162,6 @@ const AdminContent = () => {
           <TabsTrigger value="contact" className="gap-2">
             <Phone className="w-4 h-4" />
             Kontakt
-          </TabsTrigger>
-          <TabsTrigger value="cta" className="gap-2">
-            <FileText className="w-4 h-4" />
-            CTA
           </TabsTrigger>
           <TabsTrigger value="footer" className="gap-2">
             <FileText className="w-4 h-4" />
@@ -139,12 +202,39 @@ const AdminContent = () => {
                 />
               </div>
               <div>
-                <Label>URL Hero slike</Label>
-                <Input
-                  value={settings.hero?.image || ""}
-                  onChange={(e) => updateField("hero", "image", e.target.value)}
-                  placeholder="https://example.com/hero.jpg"
-                />
+                <Label>Hero Slika</Label>
+                <div className="flex gap-2 mt-1.5">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    ref={heroFileRef}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file, "hero", "image");
+                    }}
+                    disabled={uploadingHero}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => heroFileRef.current?.click()}
+                    disabled={uploadingHero}
+                    className="w-full"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploadingHero ? "Uploadam..." : "Upload slike"}
+                  </Button>
+                </div>
+                {settings.hero?.image && (
+                  <div className="mt-2">
+                    <img
+                      src={settings.hero.image}
+                      alt="Hero preview"
+                      className="w-full h-32 object-cover rounded-md"
+                    />
+                  </div>
+                )}
               </div>
               <div className="md:col-span-2">
                 <Label>Opis</Label>
@@ -160,7 +250,7 @@ const AdminContent = () => {
                 <Input
                   value={settings.hero?.cta_text || ""}
                   onChange={(e) => updateField("hero", "cta_text", e.target.value)}
-                  placeholder="Kontaktirajte me"
+                  placeholder="Rezervišite Termin"
                 />
               </div>
               <div>
@@ -210,12 +300,39 @@ const AdminContent = () => {
                 </div>
               </div>
               <div>
-                <Label>URL slike</Label>
-                <Input
-                  value={settings.about?.image || ""}
-                  onChange={(e) => updateField("about", "image", e.target.value)}
-                  placeholder="https://example.com/about.jpg"
-                />
+                <Label>Slika</Label>
+                <div className="flex gap-2 mt-1.5">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    ref={aboutFileRef}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file, "about", "image");
+                    }}
+                    disabled={uploadingAbout}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => aboutFileRef.current?.click()}
+                    disabled={uploadingAbout}
+                    className="w-full"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploadingAbout ? "Uploadam..." : "Upload slike"}
+                  </Button>
+                </div>
+                {settings.about?.image && (
+                  <div className="mt-2">
+                    <img
+                      src={settings.about.image}
+                      alt="About preview"
+                      className="w-full h-32 object-cover rounded-md"
+                    />
+                  </div>
+                )}
               </div>
               <div>
                 <Label>Prvi paragraf</Label>
@@ -311,61 +428,6 @@ const AdminContent = () => {
             >
               <Save className="w-4 h-4 mr-2" />
               {saving === "contact" ? "Spremam..." : "Sačuvaj"}
-            </Button>
-          </div>
-        </TabsContent>
-
-        {/* CTA Settings */}
-        <TabsContent value="cta" className="space-y-6">
-          <div className="bg-card rounded-lg p-6 shadow-card">
-            <h2 className="font-serif text-xl text-foreground mb-6 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-primary" />
-              CTA Sekcija
-            </h2>
-            <div className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label>Podnaslov</Label>
-                  <Input
-                    value={settings.cta?.subtitle || ""}
-                    onChange={(e) => updateField("cta", "subtitle", e.target.value)}
-                    placeholder="Spremni ste?"
-                  />
-                </div>
-                <div>
-                  <Label>Naslov</Label>
-                  <Input
-                    value={settings.cta?.title || ""}
-                    onChange={(e) => updateField("cta", "title", e.target.value)}
-                    placeholder="Započnimo Vašu Priču"
-                  />
-                </div>
-              </div>
-              <div>
-                <Label>Opis</Label>
-                <Textarea
-                  value={settings.cta?.description || ""}
-                  onChange={(e) => updateField("cta", "description", e.target.value)}
-                  placeholder="Vaša ljubavna priča zaslužuje..."
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label>Tekst dugmeta</Label>
-                <Input
-                  value={settings.cta?.button_text || ""}
-                  onChange={(e) => updateField("cta", "button_text", e.target.value)}
-                  placeholder="Rezervirajte Termin"
-                />
-              </div>
-            </div>
-            <Button
-              onClick={() => handleSave("cta")}
-              disabled={saving === "cta"}
-              className="mt-6"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              {saving === "cta" ? "Spremam..." : "Sačuvaj"}
             </Button>
           </div>
         </TabsContent>
