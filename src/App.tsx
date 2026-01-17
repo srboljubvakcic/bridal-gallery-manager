@@ -16,6 +16,7 @@ import AdminPackages from "./pages/admin/AdminPackages";
 import AdminMessages from "./pages/admin/AdminMessages";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminContent from "./pages/admin/AdminContent";
+import AdminSettings from "./pages/admin/AdminSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="messages" element={<AdminMessages />} />
               <Route path="testimonials" element={<AdminTestimonials />} />
               <Route path="content" element={<AdminContent />} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

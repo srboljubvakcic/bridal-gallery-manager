@@ -38,6 +38,7 @@ export interface CTASettings {
 export interface FooterSettings {
   brand_name: string;
   description: string;
+  logo: string;
 }
 
 export interface SiteSettings {
@@ -82,6 +83,7 @@ const defaultSettings: SiteSettings = {
   footer: {
     brand_name: "Ana Fotografija",
     description: "Profesionalna fotografija vjenčanja.",
+    logo: "",
   },
 };
 

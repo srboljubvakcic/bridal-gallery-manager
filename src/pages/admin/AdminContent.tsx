@@ -19,8 +19,10 @@ const AdminContent = () => {
   const [saving, setSaving] = useState<string | null>(null);
   const [uploadingHero, setUploadingHero] = useState(false);
   const [uploadingAbout, setUploadingAbout] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const heroFileRef = useRef<HTMLInputElement>(null);
   const aboutFileRef = useRef<HTMLInputElement>(null);
+  const logoFileRef = useRef<HTMLInputElement>(null);
 
   const fetchSettings = async () => {
     const { data, error } = await supabase
@@ -70,10 +72,10 @@ const AdminContent = () => {
 
   const handleImageUpload = async (
     file: File,
-    section: "hero" | "about",
+    section: "hero" | "about" | "footer",
     field: string
   ) => {
-    const setUploading = section === "hero" ? setUploadingHero : setUploadingAbout;
+    const setUploading = section === "hero" ? setUploadingHero : section === "about" ? setUploadingAbout : setUploadingLogo;
     setUploading(true);
 
     try {
@@ -437,11 +439,52 @@ const AdminContent = () => {
           <div className="bg-card rounded-lg p-6 shadow-card">
             <h2 className="font-serif text-xl text-foreground mb-6 flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary" />
-              Footer
+              Brending i Footer
             </h2>
             <div className="space-y-4">
               <div>
-                <Label>Naziv brenda</Label>
+                <Label>Logo</Label>
+                <div className="flex gap-2 mt-1.5">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    ref={logoFileRef}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setUploadingLogo(true);
+                        handleImageUpload(file, "footer", "logo").finally(() => setUploadingLogo(false));
+                      }
+                    }}
+                    disabled={uploadingLogo}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => logoFileRef.current?.click()}
+                    disabled={uploadingLogo}
+                    className="w-full"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploadingLogo ? "Uploadam..." : "Upload logo-a"}
+                  </Button>
+                </div>
+                {settings.footer?.logo && (
+                  <div className="mt-2 p-4 bg-charcoal rounded-md inline-block">
+                    <img
+                      src={settings.footer.logo}
+                      alt="Logo preview"
+                      className="h-12 object-contain"
+                    />
+                  </div>
+                )}
+                <p className="text-muted-foreground text-xs mt-2">
+                  Preporučena veličina: 200x60px, PNG sa transparentnom pozadinom
+                </p>
+              </div>
+              <div>
+                <Label>Naziv brenda (ako nema logo)</Label>
                 <Input
                   value={settings.footer?.brand_name || ""}
                   onChange={(e) => updateField("footer", "brand_name", e.target.value)}
