@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useTranslatedContent } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -56,7 +57,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 
 const Index = () => {
   const { settings, loading: settingsLoading } = useSiteSettings();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { formatPrice } = useCurrency();
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [packages, setPackages] = useState<Package[]>([]);
@@ -68,6 +69,11 @@ const Index = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxImages, setLightboxImages] = useState<{ id: string; url: string; title?: string }[]>([]);
+
+  // Translated content
+  const { items: translatedGalleries } = useTranslatedContent(galleries, ["name", "description"]);
+  const { items: translatedPackages } = useTranslatedContent(packages, ["title", "description", "features"]);
+  const { items: translatedTestimonials } = useTranslatedContent(testimonials, ["content", "wedding_date"]);
 
   const {
     register,
@@ -281,16 +287,16 @@ const Index = () => {
                 <Skeleton key={i} className="aspect-[4/3] rounded-sm" />
               ))}
             </div>
-          ) : galleries.length === 0 ? (
+          ) : translatedGalleries.length === 0 ? (
             <p className="text-center text-muted-foreground py-12">
               {t.gallery.empty}
             </p>
           ) : (
             <div className="grid md:grid-cols-2 gap-8">
-              {galleries.map((gallery, index) => (
+              {translatedGalleries.map((gallery, index) => (
                 <ScrollAnimation key={gallery.id} delay={index * 0.1}>
                   <button
-                    onClick={() => openGalleryLightbox(gallery)}
+                    onClick={() => openGalleryLightbox(galleries.find(g => g.id === gallery.id) || gallery)}
                     className="group image-hover rounded-sm overflow-hidden shadow-soft w-full text-left"
                   >
                     <div className="relative aspect-[4/3]">
@@ -333,13 +339,13 @@ const Index = () => {
                 <Skeleton key={i} className="h-[500px] rounded-sm" />
               ))}
             </div>
-          ) : packages.length === 0 ? (
+          ) : translatedPackages.length === 0 ? (
             <p className="text-center text-muted-foreground py-12">
               Paketi će uskoro biti dodani.
             </p>
           ) : (
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {packages.map((pkg, index) => (
+              {translatedPackages.map((pkg, index) => (
                 <ScrollAnimation key={pkg.id} delay={index * 0.1}>
                   <div
                     className={`relative bg-card rounded-sm p-8 shadow-soft transition-transform duration-300 hover:-translate-y-2 h-full ${
@@ -394,7 +400,7 @@ const Index = () => {
       </section>
 
       {/* Testimonials Section */}
-      {testimonials.length > 0 && (
+      {translatedTestimonials.length > 0 && (
         <section id="recenzije" className="section-padding bg-charcoal">
           <div className="container">
             <ScrollAnimation>
@@ -405,7 +411,7 @@ const Index = () => {
               />
             </ScrollAnimation>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-              {testimonials.map((testimonial, index) => (
+              {translatedTestimonials.map((testimonial, index) => (
                 <ScrollAnimation key={testimonial.id} delay={index * 0.1}>
                   <div className="bg-cream rounded-sm p-8 shadow-elegant h-full">
                     <div className="flex justify-center gap-1 mb-6">
