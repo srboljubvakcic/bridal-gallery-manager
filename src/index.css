@@ -8,49 +8,49 @@
 
 @layer base {
   :root {
-    /* Warm cream/champagne palette */
-    --background: 40 33% 98%;
-    --foreground: 30 10% 15%;
+    /* Refined warm palette with better contrast */
+    --background: 40 25% 96%;
+    --foreground: 30 15% 12%;
 
-    --card: 40 30% 97%;
-    --card-foreground: 30 10% 15%;
+    --card: 40 20% 94%;
+    --card-foreground: 30 15% 12%;
 
-    --popover: 40 30% 97%;
-    --popover-foreground: 30 10% 15%;
+    --popover: 40 20% 94%;
+    --popover-foreground: 30 15% 12%;
 
-    /* Champagne gold primary */
-    --primary: 38 35% 45%;
-    --primary-foreground: 40 33% 98%;
+    /* Deeper champagne gold primary */
+    --primary: 38 40% 38%;
+    --primary-foreground: 40 30% 98%;
 
-    /* Soft blush secondary */
-    --secondary: 15 30% 92%;
-    --secondary-foreground: 30 10% 20%;
+    /* Warmer secondary */
+    --secondary: 20 25% 88%;
+    --secondary-foreground: 30 15% 15%;
 
-    /* Muted cream tones */
-    --muted: 35 20% 94%;
-    --muted-foreground: 30 10% 45%;
+    /* Better contrast muted tones */
+    --muted: 35 18% 90%;
+    --muted-foreground: 30 12% 35%;
 
-    /* Rose gold accent */
-    --accent: 15 40% 85%;
-    --accent-foreground: 30 15% 20%;
+    /* Richer rose gold accent */
+    --accent: 18 35% 80%;
+    --accent-foreground: 30 18% 15%;
 
-    --destructive: 0 65% 50%;
-    --destructive-foreground: 40 33% 98%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 35 25% 88%;
-    --input: 35 25% 88%;
-    --ring: 38 35% 45%;
+    --border: 35 20% 82%;
+    --input: 35 20% 82%;
+    --ring: 38 40% 38%;
 
     --radius: 0.25rem;
 
-    /* Custom wedding colors */
-    --champagne: 38 40% 78%;
-    --champagne-dark: 38 35% 45%;
-    --blush: 15 45% 88%;
-    --blush-dark: 15 35% 70%;
-    --cream: 40 33% 95%;
-    --charcoal: 30 10% 20%;
-    --gold: 43 60% 55%;
+    /* Custom wedding colors - deeper tones */
+    --champagne: 38 35% 72%;
+    --champagne-dark: 38 40% 38%;
+    --blush: 18 40% 82%;
+    --blush-dark: 18 35% 62%;
+    --cream: 40 25% 92%;
+    --charcoal: 30 15% 15%;
+    --gold: 43 55% 48%;
 
     /* Gradients */
     --gradient-hero: linear-gradient(180deg, hsla(40, 33%, 98%, 0) 0%, hsla(40, 33%, 98%, 0.8) 60%, hsl(40, 33%, 98%) 100%);
