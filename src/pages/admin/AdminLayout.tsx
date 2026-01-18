@@ -12,6 +12,7 @@ import {
   Menu,
   X,
   Settings,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,6 +27,7 @@ const navItems = [
   { href: "/admin/testimonials", label: "Recenzije", icon: Star },
   { href: "/admin/messages", label: "Poruke", icon: MessageSquare },
   { href: "/admin/content", label: "Sadržaj", icon: FileText },
+  { href: "/admin/seo", label: "SEO", icon: Search },
   { href: "/admin/settings", label: "Podešavanja", icon: Settings },
 ];
 

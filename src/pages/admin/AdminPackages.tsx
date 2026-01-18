@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { CountDialog } from "@/components/ui/count-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -41,8 +42,10 @@ const AdminPackages = () => {
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCountDialogOpen, setIsCountDialogOpen] = useState(false);
   const [editingPackage, setEditingPackage] = useState<Package | null>(null);
   const [deletePackage, setDeletePackage] = useState<Package | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -161,6 +164,46 @@ const AdminPackages = () => {
     setIsDialogOpen(true);
   };
 
+  const generateAIPackages = async (count: number) => {
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-package', {
+        body: { 
+          count,
+          existingPackages: packages.map(p => ({ title: p.title, price: p.price }))
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.packages && Array.isArray(data.packages)) {
+        // Insert generated packages into database
+        for (const pkg of data.packages) {
+          await supabase.from("packages").insert({
+            title: pkg.title,
+            description: pkg.description,
+            price: pkg.price,
+            features: pkg.features,
+            is_popular: pkg.is_popular,
+            is_active: true,
+            display_order: packages.length + data.packages.indexOf(pkg),
+          });
+        }
+        toast.success(`${data.packages.length} AI paket(a) uspješno generisano`);
+        fetchPackages();
+      } else {
+        throw new Error("Neočekivani format odgovora");
+      }
+    } catch (error) {
+      console.error("AI generation error:", error);
+      toast.error("Greška pri generisanju AI paketa");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -168,13 +211,22 @@ const AdminPackages = () => {
           <h1 className="font-serif text-3xl text-foreground mb-2">Paketi</h1>
           <p className="text-muted-foreground">Upravljajte paketima i cijenama</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => resetForm()}>
-              <Plus className="w-4 h-4 mr-2" />
-              Novi Paket
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setIsCountDialogOpen(true)}
+            disabled={isGenerating}
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            {isGenerating ? "Generisanje..." : "AI Paketi"}
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => resetForm()}>
+                <Plus className="w-4 h-4 mr-2" />
+                Novi Paket
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>
@@ -255,6 +307,7 @@ const AdminPackages = () => {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {loading ? (
@@ -349,6 +402,15 @@ const AdminPackages = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CountDialog
+        open={isCountDialogOpen}
+        onOpenChange={setIsCountDialogOpen}
+        title="Generiši AI Pakete"
+        description="Koliko paketa želite generisati?"
+        maxCount={3}
+        onConfirm={generateAIPackages}
+      />
     </div>
   );
 };
