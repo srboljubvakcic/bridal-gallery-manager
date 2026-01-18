@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Plus, Pencil, Trash2, GripVertical } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Plus, Pencil, Trash2, GripVertical, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,10 +42,14 @@ const AdminGalleries = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingGallery, setEditingGallery] = useState<Gallery | null>(null);
   const [deleteGallery, setDeleteGallery] = useState<Gallery | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: "",
     slug: "",
     description: "",
+    cover_image: "",
     is_active: true,
   });
 
@@ -88,6 +92,7 @@ const AdminGalleries = () => {
           name: formData.name,
           slug,
           description: formData.description || null,
+          cover_image: formData.cover_image || null,
           is_active: formData.is_active,
         })
         .eq("id", editingGallery.id);
@@ -103,6 +108,7 @@ const AdminGalleries = () => {
         name: formData.name,
         slug,
         description: formData.description || null,
+        cover_image: formData.cover_image || null,
         is_active: formData.is_active,
         display_order: galleries.length,
       });
@@ -137,8 +143,9 @@ const AdminGalleries = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: "", slug: "", description: "", is_active: true });
+    setFormData({ name: "", slug: "", description: "", cover_image: "", is_active: true });
     setEditingGallery(null);
+    setCoverPreview(null);
     setIsDialogOpen(false);
   };
 
@@ -148,9 +155,46 @@ const AdminGalleries = () => {
       name: gallery.name,
       slug: gallery.slug,
       description: gallery.description || "",
+      cover_image: gallery.cover_image || "",
       is_active: gallery.is_active,
     });
+    setCoverPreview(gallery.cover_image);
     setIsDialogOpen(true);
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `cover-${Date.now()}.${fileExt}`;
+      const filePath = `covers/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("site-images")
+        .upload(filePath, file, { contentType: file.type });
+
+      if (uploadError) {
+        toast.error("Greška pri uploadu slike");
+        setUploadingCover(false);
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("site-images")
+        .getPublicUrl(filePath);
+
+      setFormData({ ...formData, cover_image: publicUrl });
+      setCoverPreview(publicUrl);
+      toast.success("Naslovna slika uploadana");
+    } catch (error) {
+      toast.error("Greška pri uploadu");
+    }
+
+    setUploadingCover(false);
   };
 
   return (
@@ -213,6 +257,55 @@ const AdminGalleries = () => {
                   placeholder="Kratak opis galerije..."
                   rows={3}
                 />
+              </div>
+              
+              {/* Cover Image Upload */}
+              <div>
+                <Label>Naslovna slika</Label>
+                <div className="mt-1.5 space-y-3">
+                  {coverPreview ? (
+                    <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
+                      <img
+                        src={coverPreview}
+                        alt="Cover preview"
+                        className="w-full h-full object-cover"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        className="absolute bottom-2 right-2"
+                        onClick={() => coverInputRef.current?.click()}
+                        disabled={uploadingCover}
+                      >
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                        {uploadingCover ? "Upload..." : "Promijeni"}
+                      </Button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => coverInputRef.current?.click()}
+                      disabled={uploadingCover}
+                      className="w-full aspect-video rounded-lg border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors flex flex-col items-center justify-center gap-2 text-muted-foreground"
+                    >
+                      <ImageIcon className="w-8 h-8" />
+                      <span className="text-sm">
+                        {uploadingCover ? "Uploadam..." : "Klikni za upload naslovne slike"}
+                      </span>
+                    </button>
+                  )}
+                  <input
+                    type="file"
+                    ref={coverInputRef}
+                    onChange={handleCoverUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Preporučena veličina: 1200x800px
+                  </p>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Switch

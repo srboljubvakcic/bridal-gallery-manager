@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ArrowRight, Star, Mail, Phone, MapPin, Send, Instagram, Facebook } from "lucide-react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
@@ -9,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DatePicker } from "@/components/ui/date-picker";
-import { Lightbox } from "@/components/Lightbox";
 import { ScrollAnimation } from "@/components/ScrollAnimation";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -58,6 +58,7 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>;
 
 const Index = () => {
+  const navigate = useNavigate();
   const { settings, loading: settingsLoading } = useSiteSettings();
   const { t, language } = useLanguage();
   const { formatPrice } = useCurrency();
@@ -66,11 +67,6 @@ const Index = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Lightbox state
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [lightboxImages, setLightboxImages] = useState<{ id: string; url: string; title?: string }[]>([]);
 
   // Translated content
   const { items: translatedGalleries } = useTranslatedContent(galleries, ["name", "description"]);
@@ -149,19 +145,8 @@ const Index = () => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const openGalleryLightbox = async (gallery: Gallery) => {
-    // Fetch photos for this gallery
-    const { data: photos } = await supabase
-      .from("photos")
-      .select("*")
-      .eq("gallery_id", gallery.id)
-      .order("display_order");
-    
-    if (photos && photos.length > 0) {
-      setLightboxImages(photos.map(p => ({ id: p.id, url: p.image_url, title: p.title || undefined })));
-      setLightboxIndex(0);
-      setLightboxOpen(true);
-    }
+  const openGalleryPage = (gallery: Gallery) => {
+    navigate(`/galerija/${gallery.slug}`);
   };
 
   return (
@@ -300,7 +285,7 @@ const Index = () => {
               {translatedGalleries.map((gallery, index) => (
                 <ScrollAnimation key={gallery.id} delay={index * 0.1}>
                   <button
-                    onClick={() => openGalleryLightbox(galleries.find(g => g.id === gallery.id) || gallery)}
+                    onClick={() => openGalleryPage(galleries.find(g => g.id === gallery.id) || gallery)}
                     className="group image-hover rounded-sm overflow-hidden shadow-soft w-full text-left"
                   >
                     <div className="relative aspect-[4/3]">
@@ -615,14 +600,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* Lightbox */}
-      <Lightbox
-        images={lightboxImages}
-        initialIndex={lightboxIndex}
-        isOpen={lightboxOpen}
-        onClose={() => setLightboxOpen(false)}
-      />
     </div>
   );
 };
