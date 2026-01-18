@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { settings } = useSiteSettings();
+  const { t } = useLanguage();
 
   return (
     <footer className="bg-charcoal text-cream/90 py-16">
@@ -44,26 +46,28 @@ export const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-serif text-lg text-cream mb-4">Brze Veze</h4>
+            <h4 className="font-serif text-lg text-cream mb-4">
+              {t.nav.about === "About" ? "Quick Links" : t.nav.about === "Über mich" ? "Schnelllinks" : "Brze Veze"}
+            </h4>
             <nav className="flex flex-col gap-2">
-              <a href="#about" className="text-cream/70 hover:text-champagne transition-colors text-sm">
-                O meni
+              <a href="#o-meni" className="text-cream/70 hover:text-champagne transition-colors text-sm">
+                {t.nav.about}
               </a>
-              <a href="#gallery" className="text-cream/70 hover:text-champagne transition-colors text-sm">
-                Galerija
+              <a href="#galerija" className="text-cream/70 hover:text-champagne transition-colors text-sm">
+                {t.nav.gallery}
               </a>
-              <a href="#packages" className="text-cream/70 hover:text-champagne transition-colors text-sm">
-                Paketi i cijene
+              <a href="#paketi" className="text-cream/70 hover:text-champagne transition-colors text-sm">
+                {t.nav.packages}
               </a>
-              <a href="#contact" className="text-cream/70 hover:text-champagne transition-colors text-sm">
-                Kontakt
+              <a href="#kontakt" className="text-cream/70 hover:text-champagne transition-colors text-sm">
+                {t.nav.contact}
               </a>
             </nav>
           </div>
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-serif text-lg text-cream mb-4">Kontakt</h4>
+            <h4 className="font-serif text-lg text-cream mb-4">{t.nav.contact}</h4>
             <div className="flex flex-col gap-3">
               <a
                 href={`mailto:${settings.contact.email}`}
@@ -89,7 +93,7 @@ export const Footer = () => {
 
         <div className="border-t border-cream/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-cream/50 text-xs">
-            © {currentYear} {settings.footer.brand_name}. Sva prava zadržana.
+            © {currentYear} {settings.footer.brand_name}. {t.footer.rights}
           </p>
           <Link
             to="/admin"

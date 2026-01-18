@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Lightbox } from "@/components/Lightbox";
+import { useLanguage } from "@/contexts/LanguageContext";
 import heroImage from "@/assets/hero-wedding.jpg";
 
 interface Photo {
@@ -21,10 +22,12 @@ interface Gallery {
 
 const GalleryDetail = () => {
   const { slug } = useParams();
+  const { t } = useLanguage();
   const [gallery, setGallery] = useState<Gallery | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     const fetchGallery = async () => {
@@ -55,7 +58,6 @@ const GalleryDetail = () => {
     }
   }, [slug]);
 
-  // Default photos if none in database
   const defaultPhotos = [
     { id: "1", image_url: heroImage, title: "Fotografija 1" },
     { id: "2", image_url: heroImage, title: "Fotografija 2" },
@@ -68,23 +70,34 @@ const GalleryDetail = () => {
   const displayPhotos = photos.length > 0 ? photos : defaultPhotos;
   const galleryName = gallery?.name || slug?.charAt(0).toUpperCase() + slug?.slice(1);
 
+  const lightboxImages = displayPhotos.map((photo) => ({
+    id: photo.id,
+    url: photo.image_url,
+    title: photo.title || undefined,
+  }));
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
   return (
     <div className="pt-24">
       <section className="section-padding">
         <div className="container">
           {/* Back Button */}
           <Link
-            to="/gallery"
+            to="/"
             className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors mb-8"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Nazad na galeriju
+            {t.gallery.back}
           </Link>
 
           {/* Gallery Header */}
           <div className="text-center mb-12">
             <p className="text-primary uppercase tracking-[0.3em] text-xs font-medium mb-3">
-              Galerija
+              {t.gallery.title}
             </p>
             <h1 className="font-serif text-4xl md:text-5xl text-foreground mb-4">
               {galleryName}
@@ -109,7 +122,7 @@ const GalleryDetail = () => {
               {displayPhotos.map((photo, index) => (
                 <button
                   key={photo.id}
-                  onClick={() => setSelectedPhoto(photo)}
+                  onClick={() => openLightbox(index)}
                   className="image-hover rounded-sm overflow-hidden shadow-soft opacity-0 animate-fade-in"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
@@ -127,26 +140,12 @@ const GalleryDetail = () => {
         </div>
       </section>
 
-      {/* Lightbox */}
-      {selectedPhoto && (
-        <div
-          className="fixed inset-0 z-50 lightbox-overlay flex items-center justify-center p-4"
-          onClick={() => setSelectedPhoto(null)}
-        >
-          <button
-            className="absolute top-4 right-4 text-cream hover:text-white transition-colors"
-            onClick={() => setSelectedPhoto(null)}
-          >
-            <X className="w-8 h-8" />
-          </button>
-          <img
-            src={selectedPhoto.image_url}
-            alt={selectedPhoto.title || "Wedding photo"}
-            className="max-w-full max-h-[90vh] object-contain rounded-sm shadow-elegant animate-scale-in"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
+      <Lightbox
+        images={lightboxImages}
+        initialIndex={lightboxIndex}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+      />
     </div>
   );
 };
