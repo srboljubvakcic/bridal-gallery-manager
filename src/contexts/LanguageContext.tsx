@@ -107,7 +107,7 @@ const translations: Record<Language, Translations> = {
       error_message: "Molimo pokušajte ponovo ili nas kontaktirajte direktno.",
       info_title: "Kontakt informacije",
       address: "Adresa",
-      social: "Pratite nas",
+      social: "Pratite me",
     },
     footer: {
       rights: "Sva prava zadržana.",
