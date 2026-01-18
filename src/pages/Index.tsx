@@ -46,8 +46,8 @@ interface Testimonial {
 const contactSchema = z.object({
   name: z.string().min(2, "Ime mora imati najmanje 2 karaktera"),
   email: z.string().email("Unesite validnu email adresu"),
-  phone: z.string().optional(),
-  event_date: z.string().optional(),
+  phone: z.string().min(6, "Unesite validan broj telefona"),
+  event_date: z.string().min(1, "Datum vjenčanja je obavezan"),
   message: z.string().min(10, "Poruka mora imati najmanje 10 karaktera"),
 });
 
