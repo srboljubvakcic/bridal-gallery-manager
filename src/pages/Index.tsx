@@ -120,7 +120,7 @@ const Index = () => {
             alt="Wedding photography"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-charcoal/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-charcoal/50 to-charcoal/70" />
         </div>
 
         <div className="relative container text-center z-10">
