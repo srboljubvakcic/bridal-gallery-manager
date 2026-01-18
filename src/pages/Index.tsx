@@ -110,6 +110,23 @@ const Index = () => {
         description: t.contact.error_message,
       });
     } else {
+      // Try to send email notification (don't fail if it doesn't work)
+      try {
+        await supabase.functions.invoke('send-contact-notification', {
+          body: {
+            name: data.name,
+            email: data.email,
+            phone: data.phone || "",
+            event_date: data.event_date || "",
+            message: data.message,
+            admin_email: settings.contact.email,
+          }
+        });
+      } catch (emailError) {
+        console.error("Failed to send email notification:", emailError);
+        // Don't show error to user - message was still saved
+      }
+
       toast.success(t.contact.success_title, {
         description: t.contact.success_message,
       });
@@ -457,23 +474,29 @@ const Index = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="phone">{t.contact.phone}</Label>
+                    <Label htmlFor="phone">{t.contact.phone} *</Label>
                     <Input
                       id="phone"
                       {...register("phone")}
                       placeholder="+387 61 234 567"
                       className="mt-1.5"
                     />
+                    {errors.phone && (
+                      <p className="text-destructive text-sm mt-1">{errors.phone.message}</p>
+                    )}
                   </div>
 
                   <div>
-                    <Label htmlFor="event_date">{t.contact.event_date}</Label>
+                    <Label htmlFor="event_date">{t.contact.event_date} *</Label>
                     <Input
                       id="event_date"
                       type="date"
                       {...register("event_date")}
                       className="mt-1.5"
                     />
+                    {errors.event_date && (
+                      <p className="text-destructive text-sm mt-1">{errors.event_date.message}</p>
+                    )}
                   </div>
 
                   <div>
