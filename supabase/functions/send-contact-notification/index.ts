@@ -33,6 +33,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Sending notification email to:", admin_email);
 
+    // Format date to EU format (dd/mm/yyyy)
+    const formatEUDate = (dateStr: string): string => {
+      if (!dateStr) return "Nije naveden";
+      try {
+        const date = new Date(dateStr);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      } catch {
+        return dateStr;
+      }
+    };
+
+    const formattedDate = formatEUDate(event_date);
+
     const emailResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -55,7 +71,7 @@ const handler = async (req: Request): Promise<Response> => {
               <p style="margin: 10px 0;"><strong>Ime:</strong> ${name}</p>
               <p style="margin: 10px 0;"><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
               <p style="margin: 10px 0;"><strong>Telefon:</strong> <a href="tel:${phone}">${phone}</a></p>
-              <p style="margin: 10px 0;"><strong>Datum vjenčanja:</strong> ${event_date || "Nije naveden"}</p>
+              <p style="margin: 10px 0;"><strong>Datum vjenčanja:</strong> ${formattedDate}</p>
               
               <h3 style="color: #5a5448; font-size: 16px; margin-top: 20px; margin-bottom: 10px;">Poruka:</h3>
               <div style="background-color: #f5f3ef; padding: 15px; border-radius: 4px; border-left: 4px solid #c4a14a;">

@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { ArrowRight, Star, Mail, Phone, MapPin, Send, Instagram, Facebook } from "lucide-react";
 import { motion } from "framer-motion";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Lightbox } from "@/components/Lightbox";
 import { ScrollAnimation } from "@/components/ScrollAnimation";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +17,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslatedContent } from "@/hooks/useTranslation";
 import { toast } from "sonner";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import heroImage from "@/assets/hero-wedding.jpg";
@@ -49,7 +51,7 @@ const contactSchema = z.object({
   name: z.string().min(2, "Ime mora imati najmanje 2 karaktera"),
   email: z.string().email("Unesite validnu email adresu"),
   phone: z.string().min(6, "Unesite validan broj telefona"),
-  event_date: z.string().min(1, "Datum vjenčanja je obavezan"),
+  event_date: z.date({ required_error: "Datum vjenčanja je obavezan" }),
   message: z.string().min(10, "Poruka mora imati najmanje 10 karaktera"),
 });
 
@@ -79,6 +81,7 @@ const Index = () => {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -103,11 +106,12 @@ const Index = () => {
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
+    const formattedDate = data.event_date ? format(data.event_date, "yyyy-MM-dd") : null;
     const { error } = await supabase.from("messages").insert({
       name: data.name,
       email: data.email,
       phone: data.phone || null,
-      event_date: data.event_date || null,
+      event_date: formattedDate,
       message: data.message,
     });
 
@@ -123,7 +127,7 @@ const Index = () => {
             name: data.name,
             email: data.email,
             phone: data.phone || "",
-            event_date: data.event_date || "",
+            event_date: formattedDate || "",
             message: data.message,
             admin_email: settings.contact.email,
           }
@@ -494,11 +498,18 @@ const Index = () => {
 
                   <div>
                     <Label htmlFor="event_date">{t.contact.event_date} *</Label>
-                    <Input
-                      id="event_date"
-                      type="date"
-                      {...register("event_date")}
-                      className="mt-1.5"
+                    <Controller
+                      name="event_date"
+                      control={control}
+                      render={({ field }) => (
+                        <DatePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Izaberite datum vjenčanja"
+                          className="mt-1.5"
+                          minDate={new Date()}
+                        />
+                      )}
                     />
                     {errors.event_date && (
                       <p className="text-destructive text-sm mt-1">{errors.event_date.message}</p>

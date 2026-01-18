@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Save, Lock, Mail, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Save, Lock, Mail, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,9 +9,9 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
 const AdminSettings = () => {
-  const { user } = useAuth();
-  const [email, setEmail] = useState(user?.email || "");
-  const [currentPassword, setCurrentPassword] = useState("");
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [savingEmail, setSavingEmail] = useState(false);
@@ -19,8 +20,13 @@ const AdminSettings = () => {
   const handleEmailChange = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || email === user?.email) {
+    if (!email) {
       toast.error("Unesite novu email adresu");
+      return;
+    }
+
+    if (email === user?.email) {
+      toast.error("Nova email adresa mora biti različita od trenutne");
       return;
     }
 
@@ -32,11 +38,19 @@ const AdminSettings = () => {
       toast.error("Greška pri promjeni email-a", {
         description: error.message,
       });
-    } else {
-      toast.success("Email uspješno promijenjen! ✨", {
-        description: "Provjerite svoju novu email adresu za potvrdu.",
-      });
+      setSavingEmail(false);
+      return;
     }
+    
+    toast.success("Email uspješno promijenjen! ✨", {
+      description: "Bićete odjavljeni. Prijavite se sa novim email-om.",
+    });
+    
+    // Sign out and redirect to login
+    setTimeout(async () => {
+      await signOut();
+      navigate("/admin");
+    }, 1500);
 
     setSavingEmail(false);
   };
@@ -67,14 +81,19 @@ const AdminSettings = () => {
       toast.error("Greška pri promjeni šifre", {
         description: error.message,
       });
-    } else {
-      toast.success("Šifra uspješno promijenjena! 🔒", {
-        description: "Vaša nova šifra je sačuvana.",
-      });
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+      setSavingPassword(false);
+      return;
     }
+    
+    toast.success("Šifra uspješno promijenjena! 🔒", {
+      description: "Bićete odjavljeni. Prijavite se sa novom šifrom.",
+    });
+    
+    // Sign out and redirect to login
+    setTimeout(async () => {
+      await signOut();
+      navigate("/admin");
+    }, 1500);
 
     setSavingPassword(false);
   };
@@ -114,9 +133,15 @@ const AdminSettings = () => {
                 className="mt-1.5"
               />
             </div>
+            <div className="p-3 bg-amber-50 rounded-md border border-amber-200">
+              <p className="text-amber-800 text-sm flex items-center gap-2">
+                <LogOut className="w-4 h-4" />
+                Nakon promjene bićete odjavljeni
+              </p>
+            </div>
             <Button type="submit" disabled={savingEmail} className="w-full">
               <Save className="w-4 h-4 mr-2" />
-              {savingEmail ? "Spremam..." : "Sačuvaj Email"}
+              {savingEmail ? "Spremam..." : "Promijeni Email i Odjavi se"}
             </Button>
           </form>
         </div>
@@ -150,9 +175,15 @@ const AdminSettings = () => {
                 className="mt-1.5"
               />
             </div>
+            <div className="p-3 bg-amber-50 rounded-md border border-amber-200">
+              <p className="text-amber-800 text-sm flex items-center gap-2">
+                <LogOut className="w-4 h-4" />
+                Nakon promjene bićete odjavljeni
+              </p>
+            </div>
             <Button type="submit" disabled={savingPassword} className="w-full">
               <Lock className="w-4 h-4 mr-2" />
-              {savingPassword ? "Spremam..." : "Promijeni Šifru"}
+              {savingPassword ? "Spremam..." : "Promijeni Šifru i Odjavi se"}
             </Button>
           </form>
         </div>
