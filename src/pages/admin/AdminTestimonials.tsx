@@ -22,6 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { CountDialog } from "@/components/ui/count-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -40,6 +41,7 @@ const AdminTestimonials = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCountDialogOpen, setIsCountDialogOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [deleteTestimonial, setDeleteTestimonial] = useState<Testimonial | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -127,11 +129,11 @@ const AdminTestimonials = () => {
     setDeleteTestimonial(null);
   };
 
-  const generateAITestimonials = async () => {
+  const generateAITestimonials = async (count: number) => {
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-testimonial', {
-        body: { count: 3 }
+        body: { count }
       });
 
       if (error) {
@@ -197,7 +199,7 @@ const AdminTestimonials = () => {
         <div className="flex gap-2">
           <Button 
             variant="outline" 
-            onClick={generateAITestimonials}
+            onClick={() => setIsCountDialogOpen(true)}
             disabled={isGenerating}
           >
             <Sparkles className="w-4 h-4 mr-2" />
@@ -383,6 +385,15 @@ const AdminTestimonials = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CountDialog
+        open={isCountDialogOpen}
+        onOpenChange={setIsCountDialogOpen}
+        title="Generiši AI Recenzije"
+        description="Koliko recenzija želite generisati?"
+        maxCount={5}
+        onConfirm={generateAITestimonials}
+      />
     </div>
   );
 };
