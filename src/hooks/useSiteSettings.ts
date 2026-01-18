@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { translateText } from "@/lib/translate";
 
 export interface HeroSettings {
   title: string;
@@ -89,8 +91,12 @@ const defaultSettings: SiteSettings = {
 
 export const useSiteSettings = () => {
   const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
+  const [originalSettings, setOriginalSettings] = useState<SiteSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
+  const [translating, setTranslating] = useState(false);
+  const { language } = useLanguage();
 
+  // Fetch original settings from database
   useEffect(() => {
     const fetchSettings = async () => {
       const { data, error } = await supabase
@@ -105,6 +111,7 @@ export const useSiteSettings = () => {
             newSettings[key] = item.value as any;
           }
         });
+        setOriginalSettings(newSettings);
         setSettings(newSettings);
       }
       setLoading(false);
@@ -113,5 +120,51 @@ export const useSiteSettings = () => {
     fetchSettings();
   }, []);
 
-  return { settings, loading };
+  // Translate settings when language changes
+  useEffect(() => {
+    if (loading) return;
+    
+    if (language === "sr") {
+      setSettings(originalSettings);
+      return;
+    }
+
+    const translateSettings = async () => {
+      setTranslating(true);
+      
+      const translatedSettings: SiteSettings = JSON.parse(JSON.stringify(originalSettings));
+
+      // Translate hero section
+      translatedSettings.hero.title = await translateText(originalSettings.hero.title, language);
+      translatedSettings.hero.title_accent = await translateText(originalSettings.hero.title_accent, language);
+      translatedSettings.hero.subtitle = await translateText(originalSettings.hero.subtitle, language);
+      translatedSettings.hero.description = await translateText(originalSettings.hero.description, language);
+      translatedSettings.hero.cta_text = await translateText(originalSettings.hero.cta_text, language);
+      translatedSettings.hero.cta_secondary_text = await translateText(originalSettings.hero.cta_secondary_text, language);
+
+      // Translate about section
+      translatedSettings.about.title = await translateText(originalSettings.about.title, language);
+      translatedSettings.about.description = await translateText(originalSettings.about.description, language);
+      translatedSettings.about.description2 = await translateText(originalSettings.about.description2, language);
+
+      // Translate CTA section
+      translatedSettings.cta.subtitle = await translateText(originalSettings.cta.subtitle, language);
+      translatedSettings.cta.title = await translateText(originalSettings.cta.title, language);
+      translatedSettings.cta.description = await translateText(originalSettings.cta.description, language);
+      translatedSettings.cta.button_text = await translateText(originalSettings.cta.button_text, language);
+
+      // Translate footer
+      translatedSettings.footer.description = await translateText(originalSettings.footer.description, language);
+
+      // Translate contact address note
+      translatedSettings.contact.address_note = await translateText(originalSettings.contact.address_note, language);
+
+      setSettings(translatedSettings);
+      setTranslating(false);
+    };
+
+    translateSettings();
+  }, [language, originalSettings, loading]);
+
+  return { settings, loading: loading || translating };
 };
