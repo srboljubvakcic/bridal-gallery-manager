@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import Index from "./pages/Index";
 import GalleryDetail from "./pages/GalleryDetail";
@@ -24,34 +25,36 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route element={<PublicLayout />}>
-              <Route path="/" element={<Index />} />
-              <Route path="/gallery/:slug" element={<GalleryDetail />} />
-            </Route>
+      <LanguageProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public Routes */}
+              <Route element={<PublicLayout />}>
+                <Route path="/" element={<Index />} />
+                <Route path="/galerija/:slug" element={<GalleryDetail />} />
+              </Route>
 
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="galleries" element={<AdminGalleries />} />
-              <Route path="photos" element={<AdminPhotos />} />
-              <Route path="packages" element={<AdminPackages />} />
-              <Route path="messages" element={<AdminMessages />} />
-              <Route path="testimonials" element={<AdminTestimonials />} />
-              <Route path="content" element={<AdminContent />} />
-              <Route path="settings" element={<AdminSettings />} />
-            </Route>
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="galleries" element={<AdminGalleries />} />
+                <Route path="photos" element={<AdminPhotos />} />
+                <Route path="packages" element={<AdminPackages />} />
+                <Route path="messages" element={<AdminMessages />} />
+                <Route path="testimonials" element={<AdminTestimonials />} />
+                <Route path="content" element={<AdminContent />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </LanguageProvider>
     </AuthProvider>
   </QueryClientProvider>
 );
