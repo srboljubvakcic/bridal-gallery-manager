@@ -202,7 +202,7 @@ const AdminPackages = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="price">Cijena (€)</Label>
+                <Label htmlFor="price">Cijena (KM)</Label>
                 <Input
                   id="price"
                   type="number"
@@ -212,6 +212,9 @@ const AdminPackages = () => {
                   placeholder="1500"
                   required
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Posjetiocima izvan BiH cijena će biti prikazana u EUR
+                </p>
               </div>
               <div>
                 <Label htmlFor="features">Stavke (svaka u novom redu)</Label>
@@ -280,7 +283,7 @@ const AdminPackages = () => {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="font-serif text-xl text-foreground">{pkg.title}</h3>
-                  <p className="text-2xl font-serif text-primary mt-1">€{pkg.price}</p>
+                  <p className="text-2xl font-serif text-primary mt-1">{pkg.price} KM</p>
                 </div>
                 <div className="flex gap-1">
                   <Button variant="ghost" size="icon" onClick={() => openEditDialog(pkg)}>

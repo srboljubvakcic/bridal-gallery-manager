@@ -12,6 +12,7 @@ import { ScrollAnimation } from "@/components/ScrollAnimation";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -56,6 +57,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 const Index = () => {
   const { settings, loading: settingsLoading } = useSiteSettings();
   const { t } = useLanguage();
+  const { formatPrice } = useCurrency();
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [packages, setPackages] = useState<Package[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -344,7 +346,7 @@ const Index = () => {
                       </p>
                       <div className="flex items-baseline justify-center gap-1">
                         <span className="font-serif text-4xl text-foreground">
-                          €{pkg.price}
+                          {formatPrice(pkg.price)}
                         </span>
                       </div>
                     </div>
