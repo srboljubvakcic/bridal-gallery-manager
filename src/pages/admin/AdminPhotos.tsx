@@ -45,10 +45,10 @@ interface Gallery {
   name: string;
 }
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB - compress all images to max 1MB
 
-// Compress image to target size
-const compressImage = (file: File, maxSizeMB: number = 2): Promise<Blob> => {
+// Compress image to target size while maintaining quality
+const compressImage = (file: File, maxSizeMB: number = 1): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -177,12 +177,10 @@ const AdminPhotos = () => {
 
     for (const file of Array.from(files)) {
       try {
-        // Compress image if larger than 2MB
+        // Always compress images to max 1MB for faster loading
         let fileToUpload: Blob | File = file;
-        if (file.size > MAX_FILE_SIZE) {
-          toast.info(`Kompresija: ${file.name}...`);
-          fileToUpload = await compressImage(file, 2);
-        }
+        toast.info(`Optimizacija: ${file.name}...`);
+        fileToUpload = await compressImage(file, 1);
 
         const fileExt = "jpg"; // Always save as jpg after compression
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;

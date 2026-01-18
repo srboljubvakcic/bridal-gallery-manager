@@ -1,5 +1,7 @@
 import { Navigate, Outlet, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard,
   Image,
@@ -17,7 +19,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -25,7 +26,7 @@ const navItems = [
   { href: "/admin/photos", label: "Fotografije", icon: Image },
   { href: "/admin/packages", label: "Paketi", icon: Package },
   { href: "/admin/testimonials", label: "Recenzije", icon: Star },
-  { href: "/admin/messages", label: "Poruke", icon: MessageSquare },
+  { href: "/admin/messages", label: "Poruke", icon: MessageSquare, hasNotification: true },
   { href: "/admin/content", label: "Sadržaj", icon: FileText },
   { href: "/admin/seo", label: "SEO", icon: Search },
   { href: "/admin/settings", label: "Podešavanja", icon: Settings },
@@ -35,6 +36,37 @@ const AdminLayout = () => {
   const { user, isAdmin, isLoading, signOut } = useAuth();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Fetch unread messages count
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      const { count } = await supabase
+        .from("messages")
+        .select("*", { count: "exact", head: true })
+        .eq("is_read", false);
+      
+      setUnreadCount(count || 0);
+    };
+
+    fetchUnreadCount();
+
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel("messages-count")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages" },
+        () => {
+          fetchUnreadCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -85,13 +117,21 @@ const AdminLayout = () => {
                 key={item.href}
                 to={item.href}
                 className={cn(
-                  "admin-nav-link",
+                  "admin-nav-link relative",
                   location.pathname === item.href && "admin-nav-link-active"
                 )}
                 onClick={() => setIsSidebarOpen(false)}
               >
                 <item.icon className="w-5 h-5" />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.hasNotification && unreadCount > 0 && (
+                  <span className="relative flex h-5 w-5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-5 w-5 bg-primary text-primary-foreground text-xs items-center justify-center font-medium">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  </span>
+                )}
               </Link>
             ))}
           </nav>
