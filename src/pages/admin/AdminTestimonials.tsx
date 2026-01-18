@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Pencil, Trash2, Star } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,6 +42,7 @@ const AdminTestimonials = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState<Testimonial | null>(null);
   const [deleteTestimonial, setDeleteTestimonial] = useState<Testimonial | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     wedding_date: "",
@@ -126,6 +127,42 @@ const AdminTestimonials = () => {
     setDeleteTestimonial(null);
   };
 
+  const generateAITestimonials = async () => {
+    setIsGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-testimonial', {
+        body: { count: 3 }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.testimonials && Array.isArray(data.testimonials)) {
+        // Insert generated testimonials into database
+        for (const testimonial of data.testimonials) {
+          await supabase.from("testimonials").insert({
+            name: testimonial.name,
+            wedding_date: testimonial.wedding_date,
+            content: testimonial.content,
+            rating: testimonial.rating,
+            is_active: true,
+            display_order: testimonials.length + data.testimonials.indexOf(testimonial),
+          });
+        }
+        toast.success(`${data.testimonials.length} AI recenzija uspješno generisano`);
+        fetchTestimonials();
+      } else {
+        throw new Error("Neočekivani format odgovora");
+      }
+    } catch (error) {
+      console.error("AI generation error:", error);
+      toast.error("Greška pri generisanju AI recenzija");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       name: "",
@@ -157,13 +194,22 @@ const AdminTestimonials = () => {
           <h1 className="font-serif text-3xl text-foreground mb-2">Recenzije</h1>
           <p className="text-muted-foreground">Upravljajte recenzijama klijenata</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => resetForm()}>
-              <Plus className="w-4 h-4 mr-2" />
-              Nova Recenzija
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={generateAITestimonials}
+            disabled={isGenerating}
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            {isGenerating ? "Generisanje..." : "AI Recenzije"}
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => resetForm()}>
+                <Plus className="w-4 h-4 mr-2" />
+                Nova Recenzija
+              </Button>
+            </DialogTrigger>
           <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>
@@ -241,6 +287,7 @@ const AdminTestimonials = () => {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {loading ? (
