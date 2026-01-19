@@ -13,6 +13,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { ScrollAnimation } from "@/components/ScrollAnimation";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useTranslatedContent } from "@/hooks/useTranslation";
@@ -60,6 +61,7 @@ type ContactFormData = z.infer<typeof contactSchema>;
 const Index = () => {
   const navigate = useNavigate();
   const { settings, loading: settingsLoading } = useSiteSettings();
+  const { sections } = useSectionVisibility();
   const { t, language } = useLanguage();
   const { formatPrice } = useCurrency();
   const [galleries, setGalleries] = useState<Gallery[]>([]);

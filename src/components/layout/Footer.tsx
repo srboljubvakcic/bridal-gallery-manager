@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -91,16 +90,10 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-cream/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-cream/20 pt-8 flex justify-center items-center">
           <p className="text-cream/50 text-xs">
             © {currentYear} {settings.footer.brand_name}. {t.footer.rights}
           </p>
-          <Link
-            to="/admin"
-            className="text-cream/30 hover:text-cream/50 text-xs transition-colors"
-          >
-            Admin
-          </Link>
         </div>
       </div>
     </footer>
