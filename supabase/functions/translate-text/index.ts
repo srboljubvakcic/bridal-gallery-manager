@@ -16,10 +16,14 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const { text, targetLanguage } = await req.json();
+    const body = await req.json();
+    const { text, texts, targetLanguage } = body;
 
-    if (!text || !targetLanguage) {
-      return new Response(JSON.stringify({ error: "Missing text or targetLanguage" }), {
+    // Support both single text and batch texts
+    const textsToTranslate = texts || (text ? [text] : []);
+    
+    if (textsToTranslate.length === 0 || !targetLanguage) {
+      return new Response(JSON.stringify({ error: "Missing text(s) or targetLanguage" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -31,6 +35,24 @@ serve(async (req) => {
       de: "German"
     };
 
+    // For batch translations, join texts with a delimiter
+    const isBatch = textsToTranslate.length > 1;
+    const delimiter = "|||SPLIT|||";
+    const inputText = isBatch 
+      ? textsToTranslate.join(`\n${delimiter}\n`)
+      : textsToTranslate[0];
+
+    const systemPrompt = isBatch
+      ? `You are a professional translator for a wedding photography website. Translate each text segment to ${languageNames[targetLanguage] || targetLanguage}.
+The input contains multiple texts separated by "${delimiter}".
+Return ONLY the translations, keeping the same separator "${delimiter}" between each translated text.
+Keep translations natural and elegant. Do not include explanations.`
+      : `You are a professional translator specializing in wedding photography website content. Translate the given text to ${languageNames[targetLanguage] || targetLanguage}. 
+Keep the translation natural and elegant, appropriate for a wedding photography website.
+Return ONLY the translated text, nothing else. Do not include any explanations or notes.`;
+
+    console.log(`Translating ${textsToTranslate.length} text(s) to ${targetLanguage}`);
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -38,24 +60,17 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash-lite",
         messages: [
-          {
-            role: "system",
-            content: `You are a professional translator specializing in wedding photography website content. Translate the given text to ${languageNames[targetLanguage] || targetLanguage}. 
-Keep the translation natural and elegant, appropriate for a wedding photography website.
-Return ONLY the translated text, nothing else. Do not include any explanations or notes.`
-          },
-          {
-            role: "user",
-            content: text
-          }
+          { role: "system", content: systemPrompt },
+          { role: "user", content: inputText }
         ],
       }),
     });
 
     if (!response.ok) {
       if (response.status === 429) {
+        console.error("Rate limit exceeded");
         return new Response(JSON.stringify({ error: "Rate limits exceeded" }), {
           status: 429,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -76,16 +91,26 @@ Return ONLY the translated text, nothing else. Do not include any explanations o
     }
 
     const data = await response.json();
-    const translatedText = data.choices?.[0]?.message?.content?.trim();
+    const translatedContent = data.choices?.[0]?.message?.content?.trim();
 
-    if (!translatedText) {
+    if (!translatedContent) {
       return new Response(JSON.stringify({ error: "No translation returned" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    return new Response(JSON.stringify({ translatedText }), {
+    // Parse batch response
+    if (isBatch) {
+      const translatedTexts = translatedContent.split(delimiter).map((t: string) => t.trim());
+      console.log(`Translated ${translatedTexts.length} texts successfully`);
+      return new Response(JSON.stringify({ translatedTexts }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Single text response (backward compatible)
+    return new Response(JSON.stringify({ translatedText: translatedContent }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
