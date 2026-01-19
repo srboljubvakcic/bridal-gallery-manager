@@ -154,244 +154,252 @@ const Index = () => {
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
-      <section className="relative h-screen min-h-[600px] flex items-center justify-center">
-        <div className="absolute inset-0">
-          <img
-            src={settings.hero.image || heroImage}
-            alt="Wedding photography"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-charcoal/50 to-charcoal/70" />
-        </div>
-
-        <div className="relative container text-center z-10">
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-champagne uppercase tracking-[0.4em] text-xs md:text-sm font-medium mb-4"
-          >
-            {settings.hero.subtitle}
-          </motion.p>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="font-serif text-4xl md:text-6xl lg:text-7xl text-cream mb-6"
-          >
-            {settings.hero.title}
-            <span className="block italic text-champagne">{settings.hero.title_accent}</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-cream/80 max-w-xl mx-auto mb-8 text-base md:text-lg"
-          >
-            {settings.hero.description}
-          </motion.p>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <Button
-              size="lg"
-              className="px-8"
-              onClick={() => scrollToSection("kontakt")}
-            >
-              {t.hero.cta_primary}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
-              size="lg"
-              className="px-8 bg-cream/20 backdrop-blur-sm text-cream border border-cream/50 hover:bg-cream hover:text-charcoal"
-              onClick={() => scrollToSection("galerija")}
-            >
-              {t.hero.cta_secondary}
-            </Button>
-          </motion.div>
-        </div>
-
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <div className="w-6 h-10 border-2 border-cream/40 rounded-full flex justify-center pt-2">
-            <div className="w-1 h-2 bg-cream/60 rounded-full animate-bounce" />
+      {sections.hero && (
+        <section className="relative h-screen min-h-[600px] flex items-center justify-center">
+          <div className="absolute inset-0">
+            <img
+              src={settings.hero.image || heroImage}
+              alt="Wedding photography"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-charcoal/50 to-charcoal/70" />
           </div>
-        </motion.div>
-      </section>
+
+          <div className="relative container text-center z-10">
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-champagne uppercase tracking-[0.4em] text-xs md:text-sm font-medium mb-4"
+            >
+              {settings.hero.subtitle}
+            </motion.p>
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="font-serif text-4xl md:text-6xl lg:text-7xl text-cream mb-6"
+            >
+              {settings.hero.title}
+              <span className="block italic text-champagne">{settings.hero.title_accent}</span>
+            </motion.h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="text-cream/80 max-w-xl mx-auto mb-8 text-base md:text-lg"
+            >
+              {settings.hero.description}
+            </motion.p>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+            >
+              <Button
+                size="lg"
+                className="px-8"
+                onClick={() => scrollToSection("kontakt")}
+              >
+                {t.hero.cta_primary}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <Button
+                size="lg"
+                className="px-8 bg-cream/20 backdrop-blur-sm text-cream border border-cream/50 hover:bg-cream hover:text-charcoal"
+                onClick={() => scrollToSection("galerija")}
+              >
+                {t.hero.cta_secondary}
+              </Button>
+            </motion.div>
+          </div>
+
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 1 }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          >
+            <div className="w-6 h-10 border-2 border-cream/40 rounded-full flex justify-center pt-2">
+              <div className="w-1 h-2 bg-cream/60 rounded-full animate-bounce" />
+            </div>
+          </motion.div>
+        </section>
+      )}
 
       {/* About Section */}
-      <section id="o-meni" className="section-padding bg-secondary/30">
-        <div className="container">
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <ScrollAnimation className="order-2 md:order-1" direction="left">
-              <p className="text-primary uppercase tracking-[0.3em] text-xs font-medium mb-3">
-                {t.about.subtitle}
-              </p>
-              <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
-                {settings.about.title}
-              </h2>
-              <div className="w-16 h-px bg-primary mb-6" />
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                {settings.about.description}
-              </p>
-              <p className="text-muted-foreground leading-relaxed">
-                {settings.about.description2}
-              </p>
-            </ScrollAnimation>
-            <ScrollAnimation className="order-1 md:order-2" direction="right">
-              <div className="relative">
-                <div className="aspect-[4/5] bg-muted rounded-sm overflow-hidden shadow-elegant">
-                  <img
-                    src={settings.about.image || heroImage}
-                    alt={settings.about.name}
-                    className="w-full h-full object-cover"
-                  />
+      {sections.about && (
+        <section id="o-meni" className="section-padding bg-secondary/30">
+          <div className="container">
+            <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
+              <ScrollAnimation className="order-2 md:order-1" direction="left">
+                <p className="text-primary uppercase tracking-[0.3em] text-xs font-medium mb-3">
+                  {t.about.subtitle}
+                </p>
+                <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
+                  {settings.about.title}
+                </h2>
+                <div className="w-16 h-px bg-primary mb-6" />
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  {settings.about.description}
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  {settings.about.description2}
+                </p>
+              </ScrollAnimation>
+              <ScrollAnimation className="order-1 md:order-2" direction="right">
+                <div className="relative">
+                  <div className="aspect-[4/5] bg-muted rounded-sm overflow-hidden shadow-elegant">
+                    <img
+                      src={settings.about.image || heroImage}
+                      alt={settings.about.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-champagne/20 rounded-sm -z-10" />
+                  <div className="absolute -top-6 -right-6 w-24 h-24 bg-blush/30 rounded-sm -z-10" />
                 </div>
-                <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-champagne/20 rounded-sm -z-10" />
-                <div className="absolute -top-6 -right-6 w-24 h-24 bg-blush/30 rounded-sm -z-10" />
-              </div>
-            </ScrollAnimation>
+              </ScrollAnimation>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Gallery Section */}
-      <section id="galerija" className="section-padding">
-        <div className="container">
-          <ScrollAnimation>
-            <SectionHeading subtitle={t.gallery.subtitle} title={t.gallery.title} />
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-              Istražite moje najbolje radove iz svijeta fotografije vjenčanja.
-            </p>
-          </ScrollAnimation>
+      {sections.gallery && (
+        <section id="galerija" className="section-padding">
+          <div className="container">
+            <ScrollAnimation>
+              <SectionHeading subtitle={t.gallery.subtitle} title={t.gallery.title} />
+              <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
+                Istražite moje najbolje radove iz svijeta fotografije vjenčanja.
+              </p>
+            </ScrollAnimation>
 
-          {loading ? (
-            <div className="grid md:grid-cols-2 gap-8">
-              {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} className="aspect-[4/3] rounded-sm" />
-              ))}
-            </div>
-          ) : translatedGalleries.length === 0 ? (
-            <p className="text-center text-muted-foreground py-12">
-              {t.gallery.empty}
-            </p>
-          ) : (
-            <div className="grid md:grid-cols-2 gap-8">
-              {translatedGalleries.map((gallery, index) => (
-                <ScrollAnimation key={gallery.id} delay={index * 0.1}>
-                  <button
-                    onClick={() => openGalleryPage(galleries.find(g => g.id === gallery.id) || gallery)}
-                    className="group image-hover rounded-sm overflow-hidden shadow-soft w-full text-left"
-                  >
-                    <div className="relative aspect-[4/3]">
-                      <img
-                        src={gallery.cover_image || heroImage}
-                        alt={gallery.name}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-charcoal/40 group-hover:bg-charcoal/20 transition-colors duration-500" />
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-cream">
-                        <h3 className="font-serif text-2xl md:text-3xl mb-2">
-                          {gallery.name}
-                        </h3>
-                        <p className="text-cream/80 text-sm uppercase tracking-widest">
-                          {t.gallery.view}
-                        </p>
+            {loading ? (
+              <div className="grid md:grid-cols-2 gap-8">
+                {[...Array(4)].map((_, i) => (
+                  <Skeleton key={i} className="aspect-[4/3] rounded-sm" />
+                ))}
+              </div>
+            ) : translatedGalleries.length === 0 ? (
+              <p className="text-center text-muted-foreground py-12">
+                {t.gallery.empty}
+              </p>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-8">
+                {translatedGalleries.map((gallery, index) => (
+                  <ScrollAnimation key={gallery.id} delay={index * 0.1}>
+                    <button
+                      onClick={() => openGalleryPage(galleries.find(g => g.id === gallery.id) || gallery)}
+                      className="group image-hover rounded-sm overflow-hidden shadow-soft w-full text-left"
+                    >
+                      <div className="relative aspect-[4/3]">
+                        <img
+                          src={gallery.cover_image || heroImage}
+                          alt={gallery.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-charcoal/40 group-hover:bg-charcoal/20 transition-colors duration-500" />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-cream">
+                          <h3 className="font-serif text-2xl md:text-3xl mb-2">
+                            {gallery.name}
+                          </h3>
+                          <p className="text-cream/80 text-sm uppercase tracking-widest">
+                            {t.gallery.view}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                </ScrollAnimation>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+                    </button>
+                  </ScrollAnimation>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Packages Section */}
-      <section id="paketi" className="section-padding bg-secondary/30">
-        <div className="container">
-          <ScrollAnimation>
-            <SectionHeading subtitle={t.packages.subtitle} title={t.packages.title} />
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-              Izaberite paket koji najbolje odgovara vašim potrebama.
-            </p>
-          </ScrollAnimation>
+      {sections.packages && (
+        <section id="paketi" className="section-padding bg-secondary/30">
+          <div className="container">
+            <ScrollAnimation>
+              <SectionHeading subtitle={t.packages.subtitle} title={t.packages.title} />
+              <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
+                Izaberite paket koji najbolje odgovara vašim potrebama.
+              </p>
+            </ScrollAnimation>
 
-          {loading ? (
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-[500px] rounded-sm" />
-              ))}
-            </div>
-          ) : translatedPackages.length === 0 ? (
-            <p className="text-center text-muted-foreground py-12">
-              Paketi će uskoro biti dodani.
-            </p>
-          ) : (
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {translatedPackages.map((pkg, index) => (
-                <ScrollAnimation key={pkg.id} delay={index * 0.1}>
-                  <div
-                    className={`relative bg-card rounded-sm p-8 shadow-soft transition-transform duration-300 hover:-translate-y-2 h-full ${
-                      pkg.is_popular ? "ring-2 ring-primary shadow-elegant" : ""
-                    }`}
-                  >
-                    {pkg.is_popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="bg-primary text-primary-foreground px-4 py-1 text-xs uppercase tracking-wider rounded-full">
-                          {t.packages.popular}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="text-center mb-8">
-                      <h3 className="font-serif text-2xl text-foreground mb-2">
-                        {pkg.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm mb-4">
-                        {pkg.description}
-                      </p>
-                      <div className="flex items-baseline justify-center gap-1">
-                        <span className="font-serif text-4xl text-foreground">
-                          {formatPrice(pkg.price)}
-                        </span>
-                      </div>
-                    </div>
-
-                    <ul className="space-y-3 mb-8">
-                      {pkg.features?.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
-                          <span className="text-primary">✓</span>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <Button
-                      variant={pkg.is_popular ? "default" : "outline"}
-                      className="w-full"
-                      onClick={() => scrollToSection("kontakt")}
+            {loading ? (
+              <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                {[...Array(3)].map((_, i) => (
+                  <Skeleton key={i} className="h-[500px] rounded-sm" />
+                ))}
+              </div>
+            ) : translatedPackages.length === 0 ? (
+              <p className="text-center text-muted-foreground py-12">
+                Paketi će uskoro biti dodani.
+              </p>
+            ) : (
+              <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                {translatedPackages.map((pkg, index) => (
+                  <ScrollAnimation key={pkg.id} delay={index * 0.1}>
+                    <div
+                      className={`relative bg-card rounded-sm p-8 shadow-soft transition-transform duration-300 hover:-translate-y-2 h-full ${
+                        pkg.is_popular ? "ring-2 ring-primary shadow-elegant" : ""
+                      }`}
                     >
-                      {t.packages.cta}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                </ScrollAnimation>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+                      {pkg.is_popular && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                          <span className="bg-primary text-primary-foreground px-4 py-1 text-xs uppercase tracking-wider rounded-full">
+                            {t.packages.popular}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="text-center mb-8">
+                        <h3 className="font-serif text-2xl text-foreground mb-2">
+                          {pkg.title}
+                        </h3>
+                        <p className="text-muted-foreground text-sm mb-4">
+                          {pkg.description}
+                        </p>
+                        <div className="flex items-baseline justify-center gap-1">
+                          <span className="font-serif text-4xl text-foreground">
+                            {formatPrice(pkg.price)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <ul className="space-y-3 mb-8">
+                        {pkg.features?.map((feature, i) => (
+                          <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
+                            <span className="text-primary">✓</span>
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <Button
+                        variant={pkg.is_popular ? "default" : "outline"}
+                        className="w-full"
+                        onClick={() => scrollToSection("kontakt")}
+                      >
+                        {t.packages.cta}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </div>
+                  </ScrollAnimation>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Testimonials Section */}
-      {translatedTestimonials.length > 0 && (
+      {sections.testimonials && translatedTestimonials.length > 0 && (
         <section id="recenzije" className="section-padding bg-charcoal">
           <div className="container">
             <ScrollAnimation>
@@ -428,180 +436,182 @@ const Index = () => {
       )}
 
       {/* Contact Section */}
-      <section id="kontakt" className="section-padding bg-secondary/30">
-        <div className="container">
-          <ScrollAnimation>
-            <SectionHeading subtitle={t.contact.subtitle} title={t.contact.title} />
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-              Rado bih čula vašu priču! Kontaktirajte me da razgovaramo o vašem posebnom danu.
-            </p>
-          </ScrollAnimation>
+      {sections.contact && (
+        <section id="kontakt" className="section-padding bg-secondary/30">
+          <div className="container">
+            <ScrollAnimation>
+              <SectionHeading subtitle={t.contact.subtitle} title={t.contact.title} />
+              <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
+                Rado bih čula vašu priču! Kontaktirajte me da razgovaramo o vašem posebnom danu.
+              </p>
+            </ScrollAnimation>
 
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 max-w-5xl mx-auto">
-            <ScrollAnimation direction="left">
-              <div className="bg-card rounded-sm p-8 shadow-soft">
-                <h3 className="font-serif text-2xl text-foreground mb-6">{t.contact.send}</h3>
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 max-w-5xl mx-auto">
+              <ScrollAnimation direction="left">
+                <div className="bg-card rounded-sm p-8 shadow-soft">
+                  <h3 className="font-serif text-2xl text-foreground mb-6">{t.contact.send}</h3>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                  <div>
-                    <Label htmlFor="name">{t.contact.name} *</Label>
-                    <Input
-                      id="name"
-                      {...register("name")}
-                      placeholder="Vaše ime"
-                      className="mt-1.5"
-                    />
-                    {errors.name && (
-                      <p className="text-destructive text-sm mt-1">{errors.name.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email">{t.contact.email} *</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      {...register("email")}
-                      placeholder="vasa@email.com"
-                      className="mt-1.5"
-                    />
-                    {errors.email && (
-                      <p className="text-destructive text-sm mt-1">{errors.email.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="phone">{t.contact.phone} *</Label>
-                    <Input
-                      id="phone"
-                      {...register("phone")}
-                      placeholder="+387 61 234 567"
-                      className="mt-1.5"
-                    />
-                    {errors.phone && (
-                      <p className="text-destructive text-sm mt-1">{errors.phone.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <Label htmlFor="event_date">{t.contact.event_date} *</Label>
-                    <Controller
-                      name="event_date"
-                      control={control}
-                      render={({ field }) => (
-                        <DatePicker
-                          value={field.value}
-                          onChange={field.onChange}
-                          placeholder="Izaberite datum vjenčanja"
-                          className="mt-1.5"
-                          minDate={new Date()}
-                        />
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                    <div>
+                      <Label htmlFor="name">{t.contact.name} *</Label>
+                      <Input
+                        id="name"
+                        {...register("name")}
+                        placeholder="Vaše ime"
+                        className="mt-1.5"
+                      />
+                      {errors.name && (
+                        <p className="text-destructive text-sm mt-1">{errors.name.message}</p>
                       )}
-                    />
-                    {errors.event_date && (
-                      <p className="text-destructive text-sm mt-1">{errors.event_date.message}</p>
-                    )}
-                  </div>
+                    </div>
 
-                  <div>
-                    <Label htmlFor="message">{t.contact.message} *</Label>
-                    <Textarea
-                      id="message"
-                      {...register("message")}
-                      placeholder="Ispričajte mi o svom posebnom danu..."
-                      rows={5}
-                      className="mt-1.5 resize-none"
-                    />
-                    {errors.message && (
-                      <p className="text-destructive text-sm mt-1">{errors.message.message}</p>
-                    )}
-                  </div>
+                    <div>
+                      <Label htmlFor="email">{t.contact.email} *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        {...register("email")}
+                        placeholder="vasa@email.com"
+                        className="mt-1.5"
+                      />
+                      {errors.email && (
+                        <p className="text-destructive text-sm mt-1">{errors.email.message}</p>
+                      )}
+                    </div>
 
-                  <Button type="submit" disabled={isSubmitting} className="w-full">
-                    {isSubmitting ? t.contact.sending : (
-                      <>
-                        {t.contact.send}
-                        <Send className="ml-2 h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </div>
-            </ScrollAnimation>
+                    <div>
+                      <Label htmlFor="phone">{t.contact.phone} *</Label>
+                      <Input
+                        id="phone"
+                        {...register("phone")}
+                        placeholder="+387 61 234 567"
+                        className="mt-1.5"
+                      />
+                      {errors.phone && (
+                        <p className="text-destructive text-sm mt-1">{errors.phone.message}</p>
+                      )}
+                    </div>
 
-            <ScrollAnimation direction="right" className="lg:pt-8">
-              <h3 className="font-serif text-2xl text-foreground mb-6">{t.contact.info_title}</h3>
+                    <div>
+                      <Label htmlFor="event_date">{t.contact.event_date} *</Label>
+                      <Controller
+                        name="event_date"
+                        control={control}
+                        render={({ field }) => (
+                          <DatePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                            placeholder="Izaberite datum vjenčanja"
+                            className="mt-1.5"
+                            minDate={new Date()}
+                          />
+                        )}
+                      />
+                      {errors.event_date && (
+                        <p className="text-destructive text-sm mt-1">{errors.event_date.message}</p>
+                      )}
+                    </div>
 
-              <div className="space-y-6 mb-12">
-                <a
-                  href={`mailto:${settings.contact.email}`}
-                  className="flex items-start gap-4 text-muted-foreground hover:text-foreground transition-colors group"
-                >
-                  <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                    <Mail className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-foreground font-medium">Email</p>
-                    <p>{settings.contact.email}</p>
-                  </div>
-                </a>
+                    <div>
+                      <Label htmlFor="message">{t.contact.message} *</Label>
+                      <Textarea
+                        id="message"
+                        {...register("message")}
+                        placeholder="Ispričajte mi o svom posebnom danu..."
+                        rows={5}
+                        className="mt-1.5 resize-none"
+                      />
+                      {errors.message && (
+                        <p className="text-destructive text-sm mt-1">{errors.message.message}</p>
+                      )}
+                    </div>
 
-                <a
-                  href={`tel:${settings.contact.phone.replace(/\s/g, "")}`}
-                  className="flex items-start gap-4 text-muted-foreground hover:text-foreground transition-colors group"
-                >
-                  <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                    <Phone className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-foreground font-medium">Telefon</p>
-                    <p>{settings.contact.phone}</p>
-                  </div>
-                </a>
+                    <Button type="submit" disabled={isSubmitting} className="w-full">
+                      {isSubmitting ? t.contact.sending : (
+                        <>
+                          {t.contact.send}
+                          <Send className="ml-2 h-4 w-4" />
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </div>
+              </ScrollAnimation>
 
-                <div className="flex items-start gap-4 text-muted-foreground">
-                  <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
-                    <MapPin className="w-5 h-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-foreground font-medium">{t.contact.address}</p>
-                    <p>{settings.contact.address}</p>
-                    <p className="text-sm">{settings.contact.address_note}</p>
+              <ScrollAnimation direction="right" className="lg:pt-8">
+                <h3 className="font-serif text-2xl text-foreground mb-6">{t.contact.info_title}</h3>
+
+                <div className="space-y-6 mb-12">
+                  <a
+                    href={`mailto:${settings.contact.email}`}
+                    className="flex items-start gap-4 text-muted-foreground hover:text-foreground transition-colors group"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                      <Mail className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-foreground font-medium">Email</p>
+                      <p>{settings.contact.email}</p>
+                    </div>
+                  </a>
+
+                  <a
+                    href={`tel:${settings.contact.phone.replace(/\s/g, "")}`}
+                    className="flex items-start gap-4 text-muted-foreground hover:text-foreground transition-colors group"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                      <Phone className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-foreground font-medium">Telefon</p>
+                      <p>{settings.contact.phone}</p>
+                    </div>
+                  </a>
+
+                  <div className="flex items-start gap-4 text-muted-foreground">
+                    <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-foreground font-medium">{t.contact.address}</p>
+                      <p>{settings.contact.address}</p>
+                      <p className="text-sm">{settings.contact.address_note}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div>
-                <h4 className="font-medium text-foreground mb-4">{t.contact.social}</h4>
-                <div className="flex gap-4">
-                  {settings.contact.instagram && (
-                    <a
-                      href={settings.contact.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                      aria-label="Instagram"
-                    >
-                      <Instagram className="w-5 h-5" />
-                    </a>
-                  )}
-                  {settings.contact.facebook && (
-                    <a
-                      href={settings.contact.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                      aria-label="Facebook"
-                    >
-                      <Facebook className="w-5 h-5" />
-                    </a>
-                  )}
+                <div>
+                  <h4 className="font-medium text-foreground mb-4">{t.contact.social}</h4>
+                  <div className="flex gap-4">
+                    {settings.contact.instagram && (
+                      <a
+                        href={settings.contact.instagram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                        aria-label="Instagram"
+                      >
+                        <Instagram className="w-5 h-5" />
+                      </a>
+                    )}
+                    {settings.contact.facebook && (
+                      <a
+                        href={settings.contact.facebook}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                        aria-label="Facebook"
+                      >
+                        <Facebook className="w-5 h-5" />
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </ScrollAnimation>
+              </ScrollAnimation>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 };
