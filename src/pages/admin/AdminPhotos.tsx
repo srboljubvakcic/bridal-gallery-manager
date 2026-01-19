@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { Plus, Trash2, Upload, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Upload, Image as ImageIcon, CheckSquare, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -120,6 +121,11 @@ const AdminPhotos = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadTotal, setUploadTotal] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Bulk delete state
+  const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchGalleries = async () => {
     const { data } = await supabase
@@ -152,6 +158,7 @@ const AdminPhotos = () => {
       setPhotos(data);
     }
     setLoading(false);
+    setSelectedPhotos(new Set()); // Clear selection when gallery changes
   };
 
   useEffect(() => {
@@ -257,6 +264,66 @@ const AdminPhotos = () => {
     setDeletePhoto(null);
   };
 
+  // Toggle single photo selection
+  const togglePhotoSelection = (photoId: string) => {
+    const newSelected = new Set(selectedPhotos);
+    if (newSelected.has(photoId)) {
+      newSelected.delete(photoId);
+    } else {
+      newSelected.add(photoId);
+    }
+    setSelectedPhotos(newSelected);
+  };
+
+  // Select/Deselect all photos
+  const toggleSelectAll = () => {
+    if (selectedPhotos.size === photos.length) {
+      setSelectedPhotos(new Set());
+    } else {
+      setSelectedPhotos(new Set(photos.map(p => p.id)));
+    }
+  };
+
+  // Bulk delete handler
+  const handleBulkDelete = async () => {
+    if (selectedPhotos.size === 0) return;
+    
+    setIsDeleting(true);
+    
+    const photosToDelete = photos.filter(p => selectedPhotos.has(p.id));
+    
+    // Delete from storage
+    const filePaths: string[] = [];
+    for (const photo of photosToDelete) {
+      const urlParts = photo.image_url.split("/photos/");
+      if (urlParts.length > 1) {
+        filePaths.push(urlParts[1]);
+      }
+    }
+    
+    if (filePaths.length > 0) {
+      await supabase.storage.from("photos").remove(filePaths);
+    }
+    
+    // Delete from database
+    const ids = Array.from(selectedPhotos);
+    const { error } = await supabase
+      .from("photos")
+      .delete()
+      .in("id", ids);
+    
+    if (error) {
+      toast.error("Greška pri brisanju fotografija");
+    } else {
+      toast.success(`Uspješno obrisano ${selectedPhotos.size} fotografija`);
+      fetchPhotos();
+    }
+    
+    setIsDeleting(false);
+    setBulkDeleteOpen(false);
+    setSelectedPhotos(new Set());
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -264,68 +331,101 @@ const AdminPhotos = () => {
           <h1 className="font-serif text-3xl text-foreground mb-2">Fotografije</h1>
           <p className="text-muted-foreground">Upravljajte fotografijama u galerijama</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button disabled={!selectedGallery}>
-              <Plus className="w-4 h-4 mr-2" />
-              Dodaj Fotografije
+        <div className="flex gap-2">
+          {selectedPhotos.size > 0 && (
+            <Button
+              variant="destructive"
+              onClick={() => setBulkDeleteOpen(true)}
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Obriši ({selectedPhotos.size})
             </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Upload Fotografija</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label>Galerija</Label>
-                <p className="text-muted-foreground text-sm">
-                  {galleries.find((g) => g.id === selectedGallery)?.name}
-                </p>
-              </div>
-              <div>
-                <Label htmlFor="photos">Odaberi fotografije</Label>
-                <Input
-                  id="photos"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  ref={fileInputRef}
-                  onChange={handleFileUpload}
-                  disabled={uploading}
-                  className="mt-1.5"
-                />
-                <p className="text-muted-foreground text-xs mt-1">
-                  Možete odabrati više fotografija. Slike veće od 2MB će biti automatski kompresovane.
-                </p>
-              </div>
-              {uploading && (
-                <div className="space-y-2">
-                  <p className="text-primary text-sm">
-                    Uploadam fotografije... ({uploadProgress}/{uploadTotal})
+          )}
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button disabled={!selectedGallery}>
+                <Plus className="w-4 h-4 mr-2" />
+                Dodaj Fotografije
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Upload Fotografija</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label>Galerija</Label>
+                  <p className="text-muted-foreground text-sm">
+                    {galleries.find((g) => g.id === selectedGallery)?.name}
                   </p>
-                  <Progress value={(uploadProgress / uploadTotal) * 100} />
                 </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
+                <div>
+                  <Label htmlFor="photos">Odaberi fotografije</Label>
+                  <Input
+                    id="photos"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                    className="mt-1.5"
+                  />
+                  <p className="text-muted-foreground text-xs mt-1">
+                    Možete odabrati više fotografija. Slike veće od 1MB će biti automatski kompresovane.
+                  </p>
+                </div>
+                {uploading && (
+                  <div className="space-y-2">
+                    <p className="text-primary text-sm">
+                      Uploadam fotografije... ({uploadProgress}/{uploadTotal})
+                    </p>
+                    <Progress value={(uploadProgress / uploadTotal) * 100} />
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Gallery Filter */}
-      <div className="mb-6">
-        <Label>Odaberi Galeriju</Label>
-        <Select value={selectedGallery} onValueChange={setSelectedGallery}>
-          <SelectTrigger className="w-64 mt-1.5">
-            <SelectValue placeholder="Odaberi galeriju" />
-          </SelectTrigger>
-          <SelectContent>
-            {galleries.map((gallery) => (
-              <SelectItem key={gallery.id} value={gallery.id}>
-                {gallery.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="mb-6 flex items-end gap-4">
+        <div>
+          <Label>Odaberi Galeriju</Label>
+          <Select value={selectedGallery} onValueChange={setSelectedGallery}>
+            <SelectTrigger className="w-64 mt-1.5">
+              <SelectValue placeholder="Odaberi galeriju" />
+            </SelectTrigger>
+            <SelectContent>
+              {galleries.map((gallery) => (
+                <SelectItem key={gallery.id} value={gallery.id}>
+                  {gallery.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {photos.length > 0 && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleSelectAll}
+          >
+            {selectedPhotos.size === photos.length ? (
+              <>
+                <CheckSquare className="w-4 h-4 mr-2" />
+                Poništi odabir
+              </>
+            ) : (
+              <>
+                <Square className="w-4 h-4 mr-2" />
+                Odaberi sve
+              </>
+            )}
+          </Button>
+        )}
       </div>
 
       {/* Photos Grid */}
@@ -355,17 +455,36 @@ const AdminPhotos = () => {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {photos.map((photo) => (
-            <div key={photo.id} className="group relative aspect-square rounded-lg overflow-hidden bg-muted">
+            <div 
+              key={photo.id} 
+              className={`group relative aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer ${
+                selectedPhotos.has(photo.id) ? "ring-2 ring-primary ring-offset-2" : ""
+              }`}
+              onClick={() => togglePhotoSelection(photo.id)}
+            >
               <img
                 src={photo.image_url}
                 alt={photo.title || "Photo"}
                 className="w-full h-full object-cover"
               />
+              {/* Selection checkbox overlay */}
+              <div className={`absolute top-2 left-2 ${
+                selectedPhotos.has(photo.id) ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              } transition-opacity`}>
+                <Checkbox 
+                  checked={selectedPhotos.has(photo.id)}
+                  className="bg-white border-white"
+                />
+              </div>
+              {/* Actions overlay */}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <Button
                   variant="destructive"
                   size="icon"
-                  onClick={() => setDeletePhoto(photo)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeletePhoto(photo);
+                  }}
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
@@ -375,6 +494,7 @@ const AdminPhotos = () => {
         </div>
       )}
 
+      {/* Single Delete Dialog */}
       <AlertDialog open={!!deletePhoto} onOpenChange={() => setDeletePhoto(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -387,6 +507,28 @@ const AdminPhotos = () => {
             <AlertDialogCancel>Otkaži</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Obriši
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Bulk Delete Dialog */}
+      <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Obrisati {selectedPhotos.size} fotografija?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Ova akcija će trajno obrisati odabrane fotografije. Ova akcija se ne može poništiti.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Otkaži</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleBulkDelete} 
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Brišem..." : `Obriši ${selectedPhotos.size} fotografija`}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

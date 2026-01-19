@@ -18,6 +18,7 @@ import AdminPackages from "./pages/admin/AdminPackages";
 import AdminMessages from "./pages/admin/AdminMessages";
 import AdminTestimonials from "./pages/admin/AdminTestimonials";
 import AdminContent from "./pages/admin/AdminContent";
+import AdminSections from "./pages/admin/AdminSections";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminSEO from "./pages/admin/AdminSEO";
 import NotFound from "./pages/NotFound";
@@ -50,6 +51,7 @@ const App = () => (
                   <Route path="messages" element={<AdminMessages />} />
                   <Route path="testimonials" element={<AdminTestimonials />} />
                   <Route path="content" element={<AdminContent />} />
+                  <Route path="sections" element={<AdminSections />} />
                   <Route path="seo" element={<AdminSEO />} />
                   <Route path="settings" element={<AdminSettings />} />
                 </Route>

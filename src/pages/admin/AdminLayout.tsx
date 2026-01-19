@@ -15,6 +15,7 @@ import {
   X,
   Settings,
   Search,
+  LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +29,7 @@ const navItems = [
   { href: "/admin/testimonials", label: "Recenzije", icon: Star },
   { href: "/admin/messages", label: "Poruke", icon: MessageSquare, hasNotification: true },
   { href: "/admin/content", label: "Sadržaj", icon: FileText },
+  { href: "/admin/sections", label: "Sekcije", icon: LayoutGrid },
   { href: "/admin/seo", label: "SEO", icon: Search },
   { href: "/admin/settings", label: "Podešavanja", icon: Settings },
 ];
