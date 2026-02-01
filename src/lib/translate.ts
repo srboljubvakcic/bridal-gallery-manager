@@ -95,12 +95,16 @@ const processBatch = async () => {
       });
 
       if (error) {
-        // Check for rate limit error
-        if (error.message?.includes('429') || error.message?.includes('Rate limit')) {
-          console.warn("Rate limit hit (429). Falling back to originals and entering cooldown.");
+        // Supabase wraps non-2xx as FunctionsHttpError (status isn't reliably exposed in the error object).
+        // Treat it as rate-limit-ish to stop request storms and avoid blank screens.
+        const errAny = error as any;
+        const isFunctionsHttpError = errAny?.name === "FunctionsHttpError";
+        const looksLike429 = errAny?.status === 429 || errAny?.context?.status === 429 || error.message?.includes("429") || error.message?.includes("Rate limit");
+
+        if (isFunctionsHttpError || looksLike429) {
+          console.warn("Translation function returned non-2xx; entering cooldown and falling back to originals.");
           rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
 
-          // Resolve originals immediately so UI never blocks
           for (const [text, resolvers] of textToResolvers) {
             for (const resolver of resolvers) {
               resolver.resolve(text);
