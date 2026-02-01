@@ -15,7 +15,11 @@ let isProcessingBatch = false;
 
 // Rate limiting
 let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 500; // 500ms between requests
+const MIN_REQUEST_INTERVAL = 1500; // be conservative to avoid 429 bursts
+
+// Circuit breaker: when we hit 429, stop attempting translations for a short period
+let rateLimitedUntil = 0;
+const RATE_LIMIT_COOLDOWN_MS = 10_000;
 
 const processBatch = async () => {
   if (batchQueue.length === 0 || isProcessingBatch) return;
@@ -64,6 +68,16 @@ const processBatch = async () => {
     }
     
     if (uniqueTexts.length === 0) continue;
+
+    // If we're currently rate-limited, fail fast (resolve originals) to avoid blank screen
+    if (Date.now() < rateLimitedUntil) {
+      for (const [text, resolvers] of textToResolvers) {
+        for (const resolver of resolvers) {
+          resolver.resolve(text);
+        }
+      }
+      continue;
+    }
     
     // Rate limiting - wait if needed
     const now = Date.now();
@@ -83,15 +97,16 @@ const processBatch = async () => {
       if (error) {
         // Check for rate limit error
         if (error.message?.includes('429') || error.message?.includes('Rate limit')) {
-          console.warn("Rate limit hit, will retry with delay");
-          // Re-queue the items for retry
+          console.warn("Rate limit hit (429). Falling back to originals and entering cooldown.");
+          rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+
+          // Resolve originals immediately so UI never blocks
           for (const [text, resolvers] of textToResolvers) {
             for (const resolver of resolvers) {
-              batchQueue.push(resolver);
+              resolver.resolve(text);
             }
           }
-          // Wait longer before retrying
-          await new Promise(resolve => setTimeout(resolve, 2000));
+
           continue;
         }
         
@@ -155,6 +170,11 @@ export const translateText = async (text: string, targetLanguage: Language): Pro
   if (translationCache.has(cacheKey)) {
     return translationCache.get(cacheKey)!;
   }
+
+  // If we're currently rate-limited, fail fast (return original) to avoid UI stalls
+  if (Date.now() < rateLimitedUntil) {
+    return text;
+  }
   
   // Check if there's already a pending translation for this exact text+language
   const pendingKey = `${text}-${targetLanguage}`;
@@ -174,7 +194,7 @@ export const translateText = async (text: string, targetLanguage: Language): Pro
     batchTimeout = setTimeout(() => {
       batchTimeout = null;
       processBatch();
-    }, 150); // 150ms delay to batch requests
+    }, 300); // a bit longer to merge bursts into fewer calls
   });
   
   // Store the pending promise
