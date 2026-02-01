@@ -145,7 +145,18 @@ const processBatch = async () => {
         }
       }
     } catch (error) {
-      console.error("Batch translation error:", error);
+      // supabase.functions.invoke can THROW (not just return { error }) for non-2xx.
+      const errAny = error as any;
+      const isFunctionsHttpError = errAny?.name === "FunctionsHttpError";
+      const looksLike429 = errAny?.status === 429 || errAny?.context?.status === 429 || String(errAny?.message || "").includes("429");
+
+      if (isFunctionsHttpError || looksLike429) {
+        console.warn("Translation function threw non-2xx; entering cooldown and falling back to originals.");
+        rateLimitedUntil = Date.now() + RATE_LIMIT_COOLDOWN_MS;
+      } else {
+        console.error("Batch translation error:", error);
+      }
+
       for (const [text, resolvers] of textToResolvers) {
         for (const resolver of resolvers) {
           resolver.resolve(text);
