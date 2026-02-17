@@ -42,16 +42,12 @@ const AdminSettings = () => {
       return;
     }
     
-    toast.success("Email uspješno promijenjen! ✨", {
-      description: "Bićete odjavljeni. Prijavite se sa novim email-om.",
+    toast.success("Link za potvrdu je poslan! ✉️", {
+      description: "Provjerite inbox novog email-a i kliknite link za potvrdu. Email će biti promijenjen tek nakon potvrde.",
+      duration: 8000,
     });
     
-    // Sign out and redirect to login
-    setTimeout(async () => {
-      await signOut();
-      navigate("/admin");
-    }, 1500);
-
+    setEmail("");
     setSavingEmail(false);
   };
 
