@@ -1,11 +1,20 @@
 import { Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { settings } = useSiteSettings();
   const { t } = useLanguage();
+  const { sections } = useSectionVisibility();
+
+  const footerLinks = [
+    { href: "#o-meni", label: t.nav.about, section: "about" as const },
+    { href: "#galerija", label: t.nav.gallery, section: "gallery" as const },
+    { href: "#paketi", label: t.nav.packages, section: "packages" as const },
+    { href: "#kontakt", label: t.nav.contact, section: "contact" as const },
+  ].filter((link) => sections[link.section]);
 
   return (
     <footer className="bg-charcoal text-cream/90 py-16">
@@ -49,18 +58,11 @@ export const Footer = () => {
               {t.nav.about === "About" ? "Quick Links" : t.nav.about === "Über mich" ? "Schnelllinks" : "Brze Veze"}
             </h4>
             <nav className="flex flex-col gap-2">
-              <a href="#o-meni" className="text-cream/70 hover:text-champagne transition-colors text-sm">
-                {t.nav.about}
-              </a>
-              <a href="#galerija" className="text-cream/70 hover:text-champagne transition-colors text-sm">
-                {t.nav.gallery}
-              </a>
-              <a href="#paketi" className="text-cream/70 hover:text-champagne transition-colors text-sm">
-                {t.nav.packages}
-              </a>
-              <a href="#kontakt" className="text-cream/70 hover:text-champagne transition-colors text-sm">
-                {t.nav.contact}
-              </a>
+              {footerLinks.map((link) => (
+                <a key={link.href} href={link.href} className="text-cream/70 hover:text-champagne transition-colors text-sm">
+                  {link.label}
+                </a>
+              ))}
             </nav>
           </div>
 
