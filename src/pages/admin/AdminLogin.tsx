@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { toast } from "sonner";
 
 const loginSchema = z.object({
@@ -21,6 +22,7 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { signIn, isAdmin } = useAuth();
+  const { settings } = useSiteSettings();
   const navigate = useNavigate();
 
   const {
@@ -55,9 +57,17 @@ const AdminLogin = () => {
       <div className="w-full max-w-md">
         <div className="bg-card rounded-sm p-8 shadow-elegant">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-              <Lock className="w-8 h-8 text-primary" />
-            </div>
+            {settings.footer.logo ? (
+              <img 
+                src={settings.footer.logo} 
+                alt={settings.footer.brand_name || "Logo"} 
+                className="h-12 mx-auto mb-4 object-contain"
+              />
+            ) : (
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                <Lock className="w-8 h-8 text-primary" />
+              </div>
+            )}
             <h1 className="font-serif text-2xl text-foreground mb-2">
               Admin Panel
             </h1>
@@ -112,7 +122,7 @@ const AdminLogin = () => {
         </div>
 
         <p className="text-center text-cream/40 text-xs mt-6">
-          © {new Date().getFullYear()} Ana Fotografija
+          © {new Date().getFullYear()} {settings.footer.brand_name}
         </p>
       </div>
     </div>
