@@ -2,12 +2,14 @@ import { Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSectionVisibility } from "@/hooks/useSectionVisibility";
+import { useTranslatedText } from "@/hooks/useTranslation";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { settings } = useSiteSettings();
   const { t } = useLanguage();
   const { sections } = useSectionVisibility();
+  const { text: footerDescription } = useTranslatedText(settings.footer.description || "");
 
   const footerLinks = [
     { href: "#o-meni", label: t.nav.about, section: "about" as const },
@@ -24,7 +26,7 @@ export const Footer = () => {
           <div>
             <h3 className="font-serif text-2xl text-cream mb-4">{settings.footer.brand_name}</h3>
             <p className="text-cream/70 text-sm leading-relaxed mb-6">
-              {settings.footer.description}
+              {footerDescription}
             </p>
             <div className="flex gap-4">
               {settings.contact.instagram && (
@@ -55,7 +57,7 @@ export const Footer = () => {
           {/* Quick Links */}
           <div>
             <h4 className="font-serif text-lg text-cream mb-4">
-              {t.nav.about === "About" ? "Quick Links" : t.nav.about === "Über mich" ? "Schnelllinks" : "Brze Veze"}
+              {t.nav.quick_links}
             </h4>
             <nav className="flex flex-col gap-2">
               {footerLinks.map((link) => (
