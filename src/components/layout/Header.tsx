@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,14 +13,17 @@ export const Header = () => {
   const location = useLocation();
   const { settings } = useSiteSettings();
   const { t } = useLanguage();
+  const { sections } = useSectionVisibility();
 
-  const navLinks = [
-    { href: "#o-meni", label: t.nav.about },
-    { href: "#galerija", label: t.nav.gallery },
-    { href: "#paketi", label: t.nav.packages },
-    { href: "#recenzije", label: t.nav.testimonials },
-    { href: "#kontakt", label: t.nav.contact },
+  const allNavLinks = [
+    { href: "#o-meni", label: t.nav.about, section: "about" as const },
+    { href: "#galerija", label: t.nav.gallery, section: "gallery" as const },
+    { href: "#paketi", label: t.nav.packages, section: "packages" as const },
+    { href: "#recenzije", label: t.nav.testimonials, section: "testimonials" as const },
+    { href: "#kontakt", label: t.nav.contact, section: "contact" as const },
   ];
+
+  const navLinks = allNavLinks.filter((link) => sections[link.section]);
 
   // Check if we're on a subpage (not homepage)
   const isSubpage = location.pathname !== "/";
