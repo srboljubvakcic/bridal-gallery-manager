@@ -9,6 +9,7 @@ interface Translations {
     packages: string;
     testimonials: string;
     contact: string;
+    quick_links: string;
   };
   hero: {
     cta_primary: string;
@@ -23,12 +24,15 @@ interface Translations {
     view: string;
     back: string;
     empty: string;
+    description: string;
   };
   packages: {
     subtitle: string;
     title: string;
     popular: string;
     cta: string;
+    description: string;
+    empty: string;
   };
   testimonials: {
     subtitle: string;
@@ -51,6 +55,11 @@ interface Translations {
     info_title: string;
     address: string;
     social: string;
+    description: string;
+    name_placeholder: string;
+    date_placeholder: string;
+    message_placeholder: string;
+    phone_label: string;
   };
   footer: {
     rights: string;
@@ -66,6 +75,7 @@ const translations: Record<Language, Translations> = {
       packages: "Paketi",
       testimonials: "Recenzije",
       contact: "Kontakt",
+      quick_links: "Brze Veze",
     },
     hero: {
       cta_primary: "Rezervišite Termin",
@@ -80,12 +90,15 @@ const translations: Record<Language, Translations> = {
       view: "Pogledaj galeriju",
       back: "Nazad na galeriju",
       empty: "Trenutno nema galerija.",
+      description: "Istražite moje najbolje radove iz svijeta fotografije vjenčanja.",
     },
     packages: {
       subtitle: "Ponuda",
       title: "Fotografski Paketi",
       popular: "Najpopularniji",
       cta: "Kontaktirajte nas",
+      description: "Izaberite paket koji najbolje odgovara vašim potrebama.",
+      empty: "Paketi će uskoro biti dodani.",
     },
     testimonials: {
       subtitle: "Utisci",
@@ -108,6 +121,11 @@ const translations: Record<Language, Translations> = {
       info_title: "Kontakt informacije",
       address: "Adresa",
       social: "Pratite me",
+      description: "Rado bih čula vašu priču! Kontaktirajte me da razgovaramo o vašem posebnom danu.",
+      name_placeholder: "Vaše ime",
+      date_placeholder: "Izaberite datum vjenčanja",
+      message_placeholder: "Ispričajte mi o svom posebnom danu...",
+      phone_label: "Telefon",
     },
     footer: {
       rights: "Sva prava zadržana.",
@@ -121,6 +139,7 @@ const translations: Record<Language, Translations> = {
       packages: "Packages",
       testimonials: "Reviews",
       contact: "Contact",
+      quick_links: "Quick Links",
     },
     hero: {
       cta_primary: "Book Now",
@@ -135,12 +154,15 @@ const translations: Record<Language, Translations> = {
       view: "View gallery",
       back: "Back to gallery",
       empty: "No galleries available.",
+      description: "Explore my best works from the world of wedding photography.",
     },
     packages: {
       subtitle: "Offer",
       title: "Photography Packages",
       popular: "Most Popular",
       cta: "Contact us",
+      description: "Choose the package that best suits your needs.",
+      empty: "Packages coming soon.",
     },
     testimonials: {
       subtitle: "Reviews",
@@ -163,6 +185,11 @@ const translations: Record<Language, Translations> = {
       info_title: "Contact Information",
       address: "Address",
       social: "Follow Us",
+      description: "I'd love to hear your story! Contact me to discuss your special day.",
+      name_placeholder: "Your name",
+      date_placeholder: "Select wedding date",
+      message_placeholder: "Tell me about your special day...",
+      phone_label: "Phone",
     },
     footer: {
       rights: "All rights reserved.",
@@ -176,6 +203,7 @@ const translations: Record<Language, Translations> = {
       packages: "Pakete",
       testimonials: "Bewertungen",
       contact: "Kontakt",
+      quick_links: "Schnelllinks",
     },
     hero: {
       cta_primary: "Termin Buchen",
@@ -190,12 +218,15 @@ const translations: Record<Language, Translations> = {
       view: "Galerie ansehen",
       back: "Zurück zur Galerie",
       empty: "Keine Galerien verfügbar.",
+      description: "Entdecken Sie meine besten Arbeiten aus der Welt der Hochzeitsfotografie.",
     },
     packages: {
       subtitle: "Angebot",
       title: "Fotografie-Pakete",
       popular: "Beliebteste",
       cta: "Kontaktieren Sie uns",
+      description: "Wählen Sie das Paket, das am besten zu Ihren Bedürfnissen passt.",
+      empty: "Pakete werden bald hinzugefügt.",
     },
     testimonials: {
       subtitle: "Bewertungen",
@@ -218,6 +249,11 @@ const translations: Record<Language, Translations> = {
       info_title: "Kontaktinformationen",
       address: "Adresse",
       social: "Folgen Sie uns",
+      description: "Ich würde gerne Ihre Geschichte hören! Kontaktieren Sie mich, um über Ihren besonderen Tag zu sprechen.",
+      name_placeholder: "Ihr Name",
+      date_placeholder: "Hochzeitsdatum wählen",
+      message_placeholder: "Erzählen Sie mir von Ihrem besonderen Tag...",
+      phone_label: "Telefon",
     },
     footer: {
       rights: "Alle Rechte vorbehalten.",

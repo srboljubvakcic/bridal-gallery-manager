@@ -16,7 +16,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useSectionVisibility } from "@/hooks/useSectionVisibility";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { useTranslatedContent } from "@/hooks/useTranslation";
+import { useTranslatedContent, useTranslatedText } from "@/hooks/useTranslation";
 import { toast } from "sonner";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -70,10 +70,19 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Translated content
+  // Translated dynamic content from DB
   const { items: translatedGalleries } = useTranslatedContent(galleries, ["name", "description"]);
   const { items: translatedPackages } = useTranslatedContent(packages, ["title", "description", "features"]);
   const { items: translatedTestimonials } = useTranslatedContent(testimonials, ["content", "wedding_date"]);
+
+  // Translated settings content
+  const { text: heroSubtitle } = useTranslatedText(settings.hero.subtitle || "");
+  const { text: heroTitle } = useTranslatedText(settings.hero.title || "");
+  const { text: heroTitleAccent } = useTranslatedText(settings.hero.title_accent || "");
+  const { text: heroDescription } = useTranslatedText(settings.hero.description || "");
+  const { text: aboutTitle } = useTranslatedText(settings.about.title || "");
+  const { text: aboutDescription } = useTranslatedText(settings.about.description || "");
+  const { text: aboutDescription2 } = useTranslatedText(settings.about.description2 || "");
 
   const {
     register,
@@ -172,7 +181,7 @@ const Index = () => {
               transition={{ duration: 0.6 }}
               className="text-champagne uppercase tracking-[0.4em] text-xs md:text-sm font-medium mb-4"
             >
-              {settings.hero.subtitle}
+              {heroSubtitle}
             </motion.p>
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
@@ -180,8 +189,8 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="font-serif text-4xl md:text-6xl lg:text-7xl text-cream mb-6"
             >
-              {settings.hero.title}
-              <span className="block italic text-champagne">{settings.hero.title_accent}</span>
+              {heroTitle}
+              <span className="block italic text-champagne">{heroTitleAccent}</span>
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -189,7 +198,7 @@ const Index = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-cream/80 max-w-xl mx-auto mb-8 text-base md:text-lg"
             >
-              {settings.hero.description}
+              {heroDescription}
             </motion.p>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -238,14 +247,14 @@ const Index = () => {
                   {t.about.subtitle}
                 </p>
                 <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
-                  {settings.about.title}
+                  {aboutTitle}
                 </h2>
                 <div className="w-16 h-px bg-primary mb-6" />
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  {settings.about.description}
+                  {aboutDescription}
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  {settings.about.description2}
+                  {aboutDescription2}
                 </p>
               </ScrollAnimation>
               <ScrollAnimation className="order-1 md:order-2" direction="right">
@@ -273,7 +282,7 @@ const Index = () => {
             <ScrollAnimation>
               <SectionHeading subtitle={t.gallery.subtitle} title={t.gallery.title} />
               <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-                Istražite moje najbolje radove iz svijeta fotografije vjenčanja.
+                {t.gallery.description}
               </p>
             </ScrollAnimation>
 
@@ -327,7 +336,7 @@ const Index = () => {
             <ScrollAnimation>
               <SectionHeading subtitle={t.packages.subtitle} title={t.packages.title} />
               <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-                Izaberite paket koji najbolje odgovara vašim potrebama.
+                {t.packages.description}
               </p>
             </ScrollAnimation>
 
@@ -339,7 +348,7 @@ const Index = () => {
               </div>
             ) : translatedPackages.length === 0 ? (
               <p className="text-center text-muted-foreground py-12">
-                Paketi će uskoro biti dodani.
+                {t.packages.empty}
               </p>
             ) : (
               <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -442,7 +451,7 @@ const Index = () => {
             <ScrollAnimation>
               <SectionHeading subtitle={t.contact.subtitle} title={t.contact.title} />
               <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-                Rado bih čula vašu priču! Kontaktirajte me da razgovaramo o vašem posebnom danu.
+                {t.contact.description}
               </p>
             </ScrollAnimation>
 
@@ -457,7 +466,7 @@ const Index = () => {
                       <Input
                         id="name"
                         {...register("name")}
-                        placeholder="Vaše ime"
+                        placeholder={t.contact.name_placeholder}
                         className="mt-1.5"
                       />
                       {errors.name && (
@@ -501,7 +510,7 @@ const Index = () => {
                           <DatePicker
                             value={field.value}
                             onChange={field.onChange}
-                            placeholder="Izaberite datum vjenčanja"
+                            placeholder={t.contact.date_placeholder}
                             className="mt-1.5"
                             minDate={new Date()}
                           />
@@ -517,7 +526,7 @@ const Index = () => {
                       <Textarea
                         id="message"
                         {...register("message")}
-                        placeholder="Ispričajte mi o svom posebnom danu..."
+                        placeholder={t.contact.message_placeholder}
                         rows={5}
                         className="mt-1.5 resize-none"
                       />
@@ -563,7 +572,7 @@ const Index = () => {
                       <Phone className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-foreground font-medium">Telefon</p>
+                      <p className="text-foreground font-medium">{t.contact.phone_label}</p>
                       <p>{settings.contact.phone}</p>
                     </div>
                   </a>
