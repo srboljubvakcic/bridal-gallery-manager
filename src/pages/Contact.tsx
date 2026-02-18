@@ -63,7 +63,7 @@ const Contact = () => {
             title="Javite Mi Se"
           />
           <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-            Rado bih čula vašu priču! Kontaktirajte me da razgovaramo o vašem 
+            Rado bih čuo vašu priču! Kontaktirajte me da razgovaramo o vašem 
             posebnom danu i kako ga mogu učiniti nezaboravnim.
           </p>
 
