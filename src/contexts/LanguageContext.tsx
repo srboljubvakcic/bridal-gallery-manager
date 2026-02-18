@@ -90,7 +90,7 @@ const translations: Record<Language, Translations> = {
       view: "Pogledaj galeriju",
       back: "Nazad na galeriju",
       empty: "Trenutno nema galerija.",
-      description: "Istražite moje najbolje radove iz svijeta fotografije vjenčanja.",
+      description: "Pogledajte neke od mojih radova.",
     },
     packages: {
       subtitle: "Ponuda",
