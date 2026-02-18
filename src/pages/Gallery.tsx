@@ -76,8 +76,7 @@ const Gallery = () => {
             title="Galerija"
           />
           <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-            Istražite moje najbolje radove iz svijeta fotografije vjenčanja. 
-            Svaka fotografija priča jedinstvenu priču o ljubavi.
+           Pogledajte neke od mojih radova.
           </p>
 
           {loading ? (
