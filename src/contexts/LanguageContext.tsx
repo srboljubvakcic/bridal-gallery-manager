@@ -121,7 +121,7 @@ const translations: Record<Language, Translations> = {
       info_title: "Kontakt informacije",
       address: "Adresa",
       social: "Pratite me",
-      description: "Rado bih čula vašu priču! Kontaktirajte me da razgovaramo o vašem posebnom danu.",
+      description: "Rado bih čuo vašu priču! Kontaktirajte me da razgovaramo o vašem posebnom danu.",
       name_placeholder: "Vaše ime",
       date_placeholder: "Izaberite datum vjenčanja",
       message_placeholder: "Ispričajte mi o svom posebnom danu...",
