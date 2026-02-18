@@ -76,7 +76,7 @@ const Gallery = () => {
             title="Galerija"
           />
           <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-           Pogledajte neke od mojih radova.
+           Pogledajte neke od mojih radova
           </p>
 
           {loading ? (
