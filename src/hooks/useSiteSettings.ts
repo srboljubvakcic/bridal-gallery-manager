@@ -166,5 +166,5 @@ export const useSiteSettings = () => {
     translateSettings();
   }, [language, originalSettings, loading]);
 
-  return { settings, loading: loading || translating };
+  return { settings, loading, translating };
 };
