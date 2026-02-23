@@ -71,8 +71,9 @@ Return ONLY the translated text, nothing else. Do not include any explanations o
     if (!response.ok) {
       if (response.status === 429) {
         console.error("Rate limit exceeded");
-        return new Response(JSON.stringify({ error: "Rate limits exceeded" }), {
-          status: 429,
+        // Return 200 with error field to prevent supabase-js from throwing FunctionsHttpError
+        return new Response(JSON.stringify({ error: "Rate limits exceeded", translatedTexts: null, translatedText: null }), {
+          status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
