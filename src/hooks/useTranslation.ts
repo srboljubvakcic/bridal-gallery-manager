@@ -30,8 +30,12 @@ export const useTranslatedText = (originalText: string) => {
 
     const doTranslate = async () => {
       setIsLoading(true);
-      const result = await translateText(originalText, language);
-      setTranslatedText(result);
+      try {
+        const result = await translateText(originalText, language);
+        setTranslatedText(result);
+      } catch {
+        setTranslatedText(originalText);
+      }
       setIsLoading(false);
     };
 
@@ -59,27 +63,39 @@ export const useTranslatedContent = <T extends Record<string, any>>(
     const doTranslate = async () => {
       setIsLoading(true);
       
-      const translatedItemsArray = await Promise.all(
-        items.map(async (item) => {
-          const translatedItem = { ...item };
-          
-          for (const field of fieldsToTranslate) {
-            const value = item[field];
-            if (typeof value === "string" && value) {
-              (translatedItem as any)[field] = await translateText(value, language);
-            } else if (Array.isArray(value)) {
-              (translatedItem as any)[field] = await translateTexts(
-                value.filter((v): v is string => typeof v === "string"),
-                language
-              );
+      try {
+        const translatedItemsArray = await Promise.all(
+          items.map(async (item) => {
+            const translatedItem = { ...item };
+            
+            for (const field of fieldsToTranslate) {
+              const value = item[field];
+              if (typeof value === "string" && value) {
+                try {
+                  (translatedItem as any)[field] = await translateText(value, language);
+                } catch {
+                  // keep original
+                }
+              } else if (Array.isArray(value)) {
+                try {
+                  (translatedItem as any)[field] = await translateTexts(
+                    value.filter((v): v is string => typeof v === "string"),
+                    language
+                  );
+                } catch {
+                  // keep original
+                }
+              }
             }
-          }
-          
-          return translatedItem;
-        })
-      );
+            
+            return translatedItem;
+          })
+        );
 
-      setTranslatedItems(translatedItemsArray);
+        setTranslatedItems(translatedItemsArray);
+      } catch {
+        setTranslatedItems(items);
+      }
       setIsLoading(false);
     };
 
