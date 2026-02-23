@@ -160,6 +160,14 @@ const Index = () => {
     navigate(`/galerija/${gallery.slug}`);
   };
 
+  if (settingsLoading) {
+    return (
+      <div className="h-screen w-full bg-charcoal flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-champagne/30 border-t-champagne rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-hidden">
       {/* Hero Section */}
