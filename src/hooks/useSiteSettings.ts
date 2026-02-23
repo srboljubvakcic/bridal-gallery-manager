@@ -132,34 +132,39 @@ export const useSiteSettings = () => {
     const translateSettings = async () => {
       setTranslating(true);
       
-      const translatedSettings: SiteSettings = JSON.parse(JSON.stringify(originalSettings));
+      try {
+        const translatedSettings: SiteSettings = JSON.parse(JSON.stringify(originalSettings));
 
-      // Translate hero section
-      translatedSettings.hero.title = await translateText(originalSettings.hero.title, language);
-      translatedSettings.hero.title_accent = await translateText(originalSettings.hero.title_accent, language);
-      translatedSettings.hero.subtitle = await translateText(originalSettings.hero.subtitle, language);
-      translatedSettings.hero.description = await translateText(originalSettings.hero.description, language);
-      translatedSettings.hero.cta_text = await translateText(originalSettings.hero.cta_text, language);
-      translatedSettings.hero.cta_secondary_text = await translateText(originalSettings.hero.cta_secondary_text, language);
+        // Translate hero section
+        translatedSettings.hero.title = await translateText(originalSettings.hero.title, language);
+        translatedSettings.hero.title_accent = await translateText(originalSettings.hero.title_accent, language);
+        translatedSettings.hero.subtitle = await translateText(originalSettings.hero.subtitle, language);
+        translatedSettings.hero.description = await translateText(originalSettings.hero.description, language);
+        translatedSettings.hero.cta_text = await translateText(originalSettings.hero.cta_text, language);
+        translatedSettings.hero.cta_secondary_text = await translateText(originalSettings.hero.cta_secondary_text, language);
 
-      // Translate about section
-      translatedSettings.about.title = await translateText(originalSettings.about.title, language);
-      translatedSettings.about.description = await translateText(originalSettings.about.description, language);
-      translatedSettings.about.description2 = await translateText(originalSettings.about.description2, language);
+        // Translate about section
+        translatedSettings.about.title = await translateText(originalSettings.about.title, language);
+        translatedSettings.about.description = await translateText(originalSettings.about.description, language);
+        translatedSettings.about.description2 = await translateText(originalSettings.about.description2, language);
 
-      // Translate CTA section
-      translatedSettings.cta.subtitle = await translateText(originalSettings.cta.subtitle, language);
-      translatedSettings.cta.title = await translateText(originalSettings.cta.title, language);
-      translatedSettings.cta.description = await translateText(originalSettings.cta.description, language);
-      translatedSettings.cta.button_text = await translateText(originalSettings.cta.button_text, language);
+        // Translate CTA section
+        translatedSettings.cta.subtitle = await translateText(originalSettings.cta.subtitle, language);
+        translatedSettings.cta.title = await translateText(originalSettings.cta.title, language);
+        translatedSettings.cta.description = await translateText(originalSettings.cta.description, language);
+        translatedSettings.cta.button_text = await translateText(originalSettings.cta.button_text, language);
 
-      // Translate footer
-      translatedSettings.footer.description = await translateText(originalSettings.footer.description, language);
+        // Translate footer
+        translatedSettings.footer.description = await translateText(originalSettings.footer.description, language);
 
-      // Translate contact address note
-      translatedSettings.contact.address_note = await translateText(originalSettings.contact.address_note, language);
+        // Translate contact address note
+        translatedSettings.contact.address_note = await translateText(originalSettings.contact.address_note, language);
 
-      setSettings(translatedSettings);
+        setSettings(translatedSettings);
+      } catch (error) {
+        console.warn("Translation failed, keeping original settings:", error);
+        // Keep current settings on failure
+      }
       setTranslating(false);
     };
 
