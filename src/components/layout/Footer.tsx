@@ -1,4 +1,5 @@
 import { Instagram, Facebook, Mail, Phone, MapPin } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSectionVisibility } from "@/hooks/useSectionVisibility";
@@ -6,7 +7,7 @@ import { useTranslatedText } from "@/hooks/useTranslation";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const { settings } = useSiteSettings();
+  const { settings, loading: settingsLoading } = useSiteSettings();
   const { t } = useLanguage();
   const { sections } = useSectionVisibility();
   const { text: footerDescription } = useTranslatedText(settings.footer.description || "");
@@ -19,7 +20,7 @@ export const Footer = () => {
   ].filter((link) => sections[link.section]);
 
   return (
-    <footer className="bg-charcoal text-cream/90 py-16">
+    <footer className={cn("bg-charcoal text-cream/90 py-16 transition-opacity duration-500", settingsLoading ? "opacity-0" : "opacity-100")}>
       <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Brand */}
