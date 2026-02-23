@@ -156,13 +156,13 @@ const TestimonialForm = () => {
               className="text-center py-8"
             >
               <CheckCircle className="w-14 h-14 text-champagne mx-auto mb-4" />
-              <h3 className="font-serif text-xl text-cream mb-2">{t.thank_you}</h3>
-              <p className="text-cream/60 text-sm mb-6">{t.thank_you_desc}</p>
+              <h3 className="font-serif text-xl text-charcoal mb-2">{t.thank_you}</h3>
+              <p className="text-charcoal/60 text-sm mb-6">{t.thank_you_desc}</p>
               <div className="flex gap-3 justify-center">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-cream/20 text-cream hover:bg-cream/10"
+                  className="border-charcoal/20 text-charcoal hover:bg-charcoal/10"
                   onClick={resetForm}
                 >
                   {t.another}
