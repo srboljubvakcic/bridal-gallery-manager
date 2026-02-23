@@ -90,7 +90,7 @@ const Gallery = () => {
               {displayGalleries.map((gallery, index) => (
                 <Link
                   key={gallery.id}
-                  to={`/gallery/${gallery.slug}`}
+                  to={`/galerija/${gallery.slug}`}
                   className="group image-hover rounded-sm overflow-hidden shadow-soft opacity-0 animate-fade-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
