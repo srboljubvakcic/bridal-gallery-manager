@@ -22,6 +22,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import heroImage from "@/assets/hero-wedding.jpg";
+import TestimonialForm from "@/components/TestimonialForm";
 
 interface Gallery {
   id: string;
@@ -461,6 +462,31 @@ const Index = () => {
                 </ScrollAnimation>
               ))}
             </div>
+
+            {/* Review Submission Form */}
+            <ScrollAnimation delay={0.3}>
+              <div className="mt-16">
+                <TestimonialForm />
+              </div>
+            </ScrollAnimation>
+          </div>
+        </section>
+      )}
+
+      {/* Also show form if testimonials section visible but no testimonials yet */}
+      {sections.testimonials && translatedTestimonials.length === 0 && (
+        <section id="recenzije" className="section-padding bg-charcoal">
+          <div className="container">
+            <ScrollAnimation>
+              <SectionHeading
+                subtitle={t.testimonials.subtitle}
+                title={t.testimonials.title}
+                className="[&_p]:text-champagne [&_h2]:text-cream"
+              />
+            </ScrollAnimation>
+            <ScrollAnimation delay={0.2}>
+              <TestimonialForm />
+            </ScrollAnimation>
           </div>
         </section>
       )}

@@ -194,7 +194,9 @@ const AdminTestimonials = () => {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-serif text-3xl text-foreground mb-2">Recenzije</h1>
-          <p className="text-muted-foreground">Upravljajte recenzijama klijenata</p>
+          <p className="text-muted-foreground">
+            Upravljajte recenzijama klijenata · {testimonials.filter(t => t.is_active === false).length} čeka odobrenje
+          </p>
         </div>
         <div className="flex gap-2">
           <Button 
@@ -352,16 +354,37 @@ const AdminTestimonials = () => {
               <p className="text-muted-foreground text-sm italic">
                 "{testimonial.content}"
               </p>
-              <div className="mt-3">
+              <div className="mt-3 flex items-center gap-2">
                 <span
                   className={`text-xs px-2 py-0.5 rounded ${
                     testimonial.is_active !== false
                       ? "bg-green-500/10 text-green-600"
-                      : "bg-muted text-muted-foreground"
+                      : "bg-amber-500/10 text-amber-600"
                   }`}
                 >
-                  {testimonial.is_active !== false ? "Aktivna" : "Neaktivna"}
+                  {testimonial.is_active !== false ? "Odobrena" : "Čeka odobrenje"}
                 </span>
+                {testimonial.is_active === false && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 text-xs border-green-500/30 text-green-600 hover:bg-green-500/10"
+                    onClick={async () => {
+                      const { error } = await supabase
+                        .from("testimonials")
+                        .update({ is_active: true })
+                        .eq("id", testimonial.id);
+                      if (error) {
+                        toast.error("Greška pri odobravanju");
+                      } else {
+                        toast.success("Recenzija odobrena");
+                        fetchTestimonials();
+                      }
+                    }}
+                  >
+                    Odobri
+                  </Button>
+                )}
               </div>
             </div>
           ))}
