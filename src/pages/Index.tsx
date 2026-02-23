@@ -430,7 +430,7 @@ const Index = () => {
       )}
 
       {/* Testimonials Section */}
-      {sections.testimonials && translatedTestimonials.length > 0 && (
+      {sections.testimonials && (
         <section id="recenzije" className="section-padding bg-charcoal">
           <div className="container">
             <ScrollAnimation>
@@ -440,52 +440,36 @@ const Index = () => {
                 className="[&_p]:text-champagne [&_h2]:text-cream"
               />
             </ScrollAnimation>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-              {translatedTestimonials.map((testimonial, index) => (
-                <ScrollAnimation key={testimonial.id} delay={index * 0.1}>
-                  <div className="bg-cream rounded-sm p-8 shadow-elegant h-full">
-                    <div className="flex justify-center gap-1 mb-6">
-                      {[...Array(testimonial.rating || 5)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-champagne-dark text-champagne-dark" />
-                      ))}
-                    </div>
-                    <blockquote className="font-serif text-lg italic text-charcoal mb-6 text-center leading-relaxed">
-                      "{testimonial.content}"
-                    </blockquote>
-                    <div className="text-center">
-                      <p className="text-champagne-dark font-medium">{testimonial.name}</p>
-                      {testimonial.wedding_date && (
-                        <p className="text-charcoal/60 text-sm">{testimonial.wedding_date}</p>
-                      )}
-                    </div>
-                  </div>
-                </ScrollAnimation>
-              ))}
-            </div>
 
-            {/* Review Submission Form */}
-            <ScrollAnimation delay={0.3}>
-              <div className="mt-16">
+            {translatedTestimonials.length > 0 && (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+                {translatedTestimonials.map((testimonial, index) => (
+                  <ScrollAnimation key={testimonial.id} delay={index * 0.1}>
+                    <div className="bg-cream rounded-sm p-8 shadow-elegant h-full">
+                      <div className="flex justify-center gap-1 mb-6">
+                        {[...Array(testimonial.rating || 5)].map((_, i) => (
+                          <Star key={i} className="w-4 h-4 fill-champagne-dark text-champagne-dark" />
+                        ))}
+                      </div>
+                      <blockquote className="font-serif text-lg italic text-charcoal mb-6 text-center leading-relaxed">
+                        "{testimonial.content}"
+                      </blockquote>
+                      <div className="text-center">
+                        <p className="text-champagne-dark font-medium">{testimonial.name}</p>
+                        {testimonial.wedding_date && (
+                          <p className="text-charcoal/60 text-sm">{testimonial.wedding_date}</p>
+                        )}
+                      </div>
+                    </div>
+                  </ScrollAnimation>
+                ))}
+              </div>
+            )}
+
+            <ScrollAnimation delay={0.2}>
+              <div className="mt-12 text-center">
                 <TestimonialForm />
               </div>
-            </ScrollAnimation>
-          </div>
-        </section>
-      )}
-
-      {/* Also show form if testimonials section visible but no testimonials yet */}
-      {sections.testimonials && translatedTestimonials.length === 0 && (
-        <section id="recenzije" className="section-padding bg-charcoal">
-          <div className="container">
-            <ScrollAnimation>
-              <SectionHeading
-                subtitle={t.testimonials.subtitle}
-                title={t.testimonials.title}
-                className="[&_p]:text-champagne [&_h2]:text-cream"
-              />
-            </ScrollAnimation>
-            <ScrollAnimation delay={0.2}>
-              <TestimonialForm />
             </ScrollAnimation>
           </div>
         </section>
