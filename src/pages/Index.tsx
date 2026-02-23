@@ -163,13 +163,26 @@ const Index = () => {
   if (settingsLoading) {
     return (
       <div className="h-screen w-full bg-charcoal flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-champagne/30 border-t-champagne rounded-full animate-spin" />
+        <div className="flex flex-col items-center gap-6">
+          {/* Elegant pulsing rings */}
+          <div className="relative w-16 h-16">
+            <div className="absolute inset-0 rounded-full border border-champagne/20 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
+            <div className="absolute inset-2 rounded-full border border-champagne/30 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite_0.4s]" />
+            <div className="absolute inset-4 rounded-full border border-champagne/50 animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite_0.8s]" />
+            <div className="absolute inset-[26px] rounded-full bg-champagne/60" />
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden">
+    <motion.div 
+      className="overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+    >
       {/* Hero Section */}
       {sections.hero && (
         <section className="relative h-screen min-h-[600px] flex items-center justify-center">
@@ -629,7 +642,7 @@ const Index = () => {
           </div>
         </section>
       )}
-    </div>
+    </motion.div>
   );
 };
 

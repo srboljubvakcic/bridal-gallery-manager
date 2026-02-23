@@ -80,7 +80,7 @@ export const Header = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className={cn("hidden md:flex items-center gap-6 transition-opacity duration-300", settingsLoading ? "opacity-0" : "opacity-100")}>
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -95,7 +95,7 @@ export const Header = () => {
         </nav>
 
         {/* Mobile Menu Button */}
-        <div className="md:hidden flex items-center gap-3">
+        <div className={cn("md:hidden flex items-center gap-3 transition-opacity duration-300", settingsLoading ? "opacity-0" : "opacity-100")}>
           <LanguageSwitcher isScrolled={false} />
           <button
             className="p-2 text-cream transition-colors"
