@@ -11,7 +11,7 @@ export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { settings } = useSiteSettings();
+  const { settings, loading: settingsLoading } = useSiteSettings();
   const { t } = useLanguage();
   const { sections } = useSectionVisibility();
 
@@ -64,7 +64,9 @@ export const Header = () => {
           to="/"
           className="text-cream transition-colors"
         >
-          {settings.footer.logo ? (
+          {settingsLoading ? (
+            <div className="h-8 md:h-10 w-32" />
+          ) : settings.footer.logo ? (
             <img 
               src={settings.footer.logo} 
               alt={settings.footer.brand_name || "Logo"} 
